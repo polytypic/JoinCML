@@ -63,19 +63,15 @@ Here are some working hypotheses:
 
 * CML < JoinCML < TE.  That is, JoinCML is strictly more expressive than CML and
   TE is strictly more expressive than JoinCML.
-
 * JoinCML allows n-way rendezvous to be implemented for any n determined before
   the synchronization.  TE allows the n to be determined during synchronization.
   CML only allows 2-way rendezvous.
-
 * JoinCML subsumes core
   [join-calculus](http://research.microsoft.com/en-us/um/people/fournet/papers/join-tutorial.pdf)
   in a synchronous form.
-
 * JoinCML is significantly less expensive to implement than TE, because
   synchronization does not require evaluating events step-by-step during
   synchronization.
-
 * JoinCML is better suited to impure languages than TE, because synchronization
   does not require running arbitrary code and thus there is no danger of
   performing side-effects that cannot be unrolled.
