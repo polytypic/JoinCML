@@ -20,8 +20,9 @@ namespace JoinCML.Examples
 //   ~~sCh <&> ~~sCh
 //
 // The reason why JoinCML allows n-way rendezvous unlike CML is that the `join`
-// (or `<&>`) combinator effectively allows joining an n-way rendezvous and a
-// 2-way rendezvous into a (n+1)-way rendezvous.
+// (or `<&>`) combinator effectively allows joining an m-way rendezvous and a
+// n-way rendezvous into a (m+n-1)-way rendezvous.  In this case we join two
+// 2-way rendezvous into a 3-way rendezvous.
 
 open JoinCML
 
