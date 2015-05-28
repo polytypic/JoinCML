@@ -84,3 +84,7 @@ Some examples have been drafted:
   [Swap3.fs](Examples/Swap3.fs).
 * Dining Philosophers [Dining.fs](Examples/Dining.fs) using `MVar`s defined in
   [MVar.fsi](Examples/MVar.fsi) and [MVar.fs](Examples/MVar.fs).
+
+Contributions and collaborators are welcome!  In particular, if you have
+interesting concurrent programming problems to solve, it would be interesting to
+try to express solutions to them using JoinCML.
