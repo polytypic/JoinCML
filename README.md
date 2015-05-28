@@ -67,8 +67,7 @@ Here are some working hypotheses:
   the synchronization.  TE allows the n to be determined during synchronization.
   CML only allows 2-way rendezvous.
 * JoinCML subsumes core
-  [join-calculus](http://research.microsoft.com/en-us/um/people/fournet/papers/join-tutorial.pdf)
-  in a synchronous form.
+  [join-calculus](http://research.microsoft.com/en-us/um/people/fournet/papers/join-tutorial.pdf).
 * JoinCML is significantly less expensive to implement than TE, because
   synchronization does not require evaluating events step-by-step during
   synchronization.
@@ -106,6 +105,8 @@ Some examples have been drafted:
   [Swap3.fs](Examples/Swap3.fs).
 * Dining Philosophers [Dining.fs](Examples/Dining.fs) using `MVar`s defined in
   [MVar.fsi](Examples/MVar.fsi) and [MVar.fs](Examples/MVar.fs).
+* An encoding of join-calculus and translations of examples based on
+  join-calculus in [Join.fs](Examples/Join.fs).
 
 Contributions and collaborators are welcome!  In particular, if you have
 interesting concurrent programming problems to solve, it would be interesting to
