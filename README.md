@@ -74,7 +74,7 @@ Here are some working hypotheses:
   synchronization.
 * JoinCML is better suited to impure languages than TE, because synchronization
   does not require running arbitrary code and thus there is no danger of
-  performing side-effects that cannot be unrolled.
+  performing side-effects that cannot be rolled back.
 
 At this point JoinCML is vaporware.
 
