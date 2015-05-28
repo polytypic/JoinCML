@@ -1,5 +1,18 @@
 namespace JoinCML.Examples
 
+// This example implements a basic solution to the dining philosophers problem
+//
+//   http://rosettacode.org/wiki/Dining_philosophers
+//
+// using JoinCML.  The implementation is very simple: we simply join the two
+// alternatives corresponding to the actions of taking chopsticks:
+//
+//   MVar.take lhsStick <&> MVar.take rhsStick
+//
+// The synchronization mechanism of JoinCML takes care of resolving ordering
+// problems to implement the simultaneous synchronization of joined
+// alternatives.
+
 open System
 open JoinCML
 
