@@ -83,4 +83,4 @@ Some examples have been drafted:
 * 3-way swap channel in [Swap3.fsi](Examples/Swap3.fsi) and
   [Swap3.fs](Examples/Swap3.fs).
 * Dining Philosophers [Dining.fs](Examples/Dining.fs) using `MVar`s defined in
-  [MVar.fsi](Examples/MVar.fsi) and [MVar.fsi](Examples/MVar.fsi).
+  [MVar.fsi](Examples/MVar.fsi) and [MVar.fs](Examples/MVar.fs).
