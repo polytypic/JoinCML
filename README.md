@@ -52,6 +52,11 @@ let (<*>) x2yA xA =
 Unlike TE, JoinCML essentially retains all of CML as a subset, including
 negative acknowledgments and the semantics of having only a single commit point.
 
+Unsurprisingly, it appears that basically the same idea has already been
+discovered earlier in the form of
+[Conjoined Events](https://kar.kent.ac.uk/33878/1/Conjoined.pdf).  Thanks to
+Matthew Fluet for finding the paper!
+
 This project seeks to answer the following questions:
 
 * What can JoinCML express that CML cannot express?
