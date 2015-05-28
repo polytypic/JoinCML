@@ -45,6 +45,7 @@
     <Compile Include="Swap3.fsi" />
     <Compile Include="Swap3.fs" />
     <Compile Include="Dining.fs" />
+    <Compile Include="Join.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.1\Framework\v4.0\Microsoft.FSharp.Targets" />
