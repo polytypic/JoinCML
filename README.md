@@ -61,7 +61,7 @@ This project seeks to answer the following questions:
 
 Here are some working hypotheses:
 
-* CML < JoinCML < TE.  That is, JoinCML is strictly more expressive than CML and
+* CML ⊊ JoinCML ⊊ TE.  That is, JoinCML is strictly more expressive than CML and
   TE is strictly more expressive than JoinCML.
 * JoinCML allows n-way rendezvous to be implemented for any n determined before
   the synchronization.  TE allows the n to be determined during synchronization.
