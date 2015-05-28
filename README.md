@@ -81,7 +81,7 @@ rewritten to a [DNF](http://en.wikipedia.org/wiki/Disjunctive_normal_form)-style
 normal form that roughly looks like
 
 ```fsharp
-(p11 <&> ...) <|> (p21 <&> ...) ...
+(p11 <&> ...) <|> (p21 <&> ...) <|> ...
 ```
 
 when we use `<|>` for `choice` and `<&>` for `join` and the `pij` are operations
