@@ -15,7 +15,8 @@ namespace JoinCML.Examples.JoinCalculusStyle
 
 open JoinCML
 
-/// This module implements a core asynchonous join-calculus using JoinCML.
+/// This module implements a variation of core asynchronous join-calculus using
+/// JoinCML.
 [<AutoOpen>]
 module Join =
   type AsyncCh<'x> = AsyncCh of Ch<'x>
