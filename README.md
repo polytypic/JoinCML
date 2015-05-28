@@ -76,7 +76,29 @@ Here are some working hypotheses:
   does not require running arbitrary code and thus there is no danger of
   performing side-effects that cannot be rolled back.
 
-At this point JoinCML is vaporware.
+One way to gain some additional intuition is that JoinCML alternatives can be
+rewritten to a [DNF](http://en.wikipedia.org/wiki/Disjunctive_normal_form)-style
+normal form that roughly looks like
+
+```fsharp
+(p11 <&> ...) <|> (p21 <&> ...) ...
+```
+
+when we use `<|>` for `choice` and `<&>` for `join` and the `pij` are operations
+on channels.  Ordinary CML doesn't have `<&>` aka `join`, so in ordinary CML the
+normal form is just
+
+```fsharp
+p1 <|> p2 <|> ...
+```
+
+In both of the above, the resulting normal forms are finite.  TE does not have
+such a normal form.  It is even possible to express a pair of processes using TE
+that exchange messages indefinitely without completing a transaction.
+
+At this point JoinCML is vaporware, but I definitely plan to try find an
+efficient implementation.  (Of course, most of JoinCML can be trivially
+implemented in TE.)
 
 Some examples have been drafted:
 
