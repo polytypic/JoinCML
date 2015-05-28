@@ -54,8 +54,8 @@ negative acknowledgments and the semantics of having only a single commit point.
 
 This project seeks to answer the following questions:
 
-* What can JoinCML express that cannot be expressed in CML?
-* What can JoinCML cannot express that TE can express?
+* What can JoinCML express that CML cannot express?
+* What cannot JoinCML express that TE can express?
 * Does JoinCML have favorable properties when compared to TE?
 * Can JoinCML be implemented efficiently?
 
