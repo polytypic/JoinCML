@@ -1,13 +1,19 @@
 namespace JoinCML.Examples.JoinCalculusStyle
 
 // The examples in this file are translations of various examples based on
-// join-calculus.  JoinCML seems to be able to encode core join-calculus where
-// arbitrary patterns or guards are not used.
+// join-calculus or JoCaml:
 //
-// It seems that it would be possible to extend JoinCML to allow arbitrary
-// guards, but that would require adding a new type and guard combinator so that
-// guards could be added and combined to be evaluated just before post
-// synchronization actions.
+//   http://research.microsoft.com/en-us/um/people/fournet/papers/join-tutorial.pdf
+//   http://jocaml.inria.fr/doc/concurrent.html
+//
+// JoinCML seems to be able to encode core join-calculus where arbitrary
+// patterns or guards are not used.  Simple uses of pattern matching can be
+// translated into uses of more channels, but this is not always practical.
+//
+// It would be possible to extend JoinCML to allow arbitrary guards, but that
+// would require adding a new type and guard combinator so that guards could be
+// added and combined to be evaluated just before synchronization takes place
+// and before post synchronization actions.
 //
 // Note that the examples in this file do not necessarily represent the best
 // ways to use JoinCML.  For example, the `OnePlaceBuffer` implemented below is
@@ -17,7 +23,6 @@ open JoinCML
 
 /// This module implements or encodes a variation of core asynchronous
 /// join-calculus using JoinCML.
-[<AutoOpen>]
 module Join =
   /// Represents an asynchronous channel.
   type AsyncCh<'x> =
@@ -83,7 +88,11 @@ module Join =
       let rec forever () = alt |>>= forever
       forever () |> Async.Start
 
+////////////////////////////////////////////////////////////////////////////////
+
 module OnePlaceBuffer =
+  open Join
+
   type T<'x> = {get: unit -> Async<'x>; put: 'x -> Async<unit>}
 
   let create () =
@@ -95,3 +104,26 @@ module OnePlaceBuffer =
     join [-.none .&. +.put |~> fun x putR -> some <~ x; replyTo putR ()
           +.some .&. -.get |~> fun x getR -> none <~ (); replyTo getR x]
     {put = call put; get = call get}
+
+////////////////////////////////////////////////////////////////////////////////
+
+module Pies =
+  open Join
+
+  type u2u = unit -> unit
+  type T = {apple: u2u; rasperry: u2u; cheese: u2u; pie: u2u; cake: u2u}
+
+  let pies () =
+    let apple = asyncCh ()
+    let rasperry = asyncCh ()
+    let cheese = asyncCh ()
+    let pie = asyncCh ()
+    let cake = asyncCh ()
+    join [(+.apple <|> +.rasperry) .&. -.pie |~> printfn "%s pie"
+          (+.rasperry <|> +.cheese) .&. -.cake |~> printfn "%s cake"]
+    let into ch s () = ch <~ s
+    {apple = into apple "apple"
+     rasperry = into rasperry "rasperry"
+     cheese = into cheese "cheese"
+     pie = into pie "pie"
+     cake = into cake "cake"}
