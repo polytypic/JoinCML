@@ -27,7 +27,8 @@ module Alt =
 The idea of
 [Transactional Events](http://www.cs.rit.edu/~mtf/research/tx-events/ICFP06/icfp06.pdf)
 (TE) is to extend CML-style events to a monad (with plus).  The result is a
-highly expressive synchronization mechanism.
+highly expressive synchronization mechanism with some surprising and interesting
+[Programming Idioms](http://arxiv.org/pdf/1002.0936.pdf).
 
 The idea of JoinCML is to extend CML-style alternatives just far enough to form
 an applicative functor.  More specifically by adding a single new combinator:
@@ -63,6 +64,7 @@ This project seeks to answer the following questions:
 * What cannot JoinCML express that TE can express?
 * Does JoinCML have favorable properties when compared to TE?
 * Can JoinCML be implemented efficiently?
+* What sort of programming idioms work with JoinCML?
 
 Here are some working hypotheses:
 
