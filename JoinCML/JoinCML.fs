@@ -41,6 +41,11 @@ module Alt =
   let after (x2y: 'x -> 'y) (xA: Alt<'x>) : Alt<'y> =
     afterAsync (x2y >> async.Return) xA
 
+  let choose xAs = before <| fun () ->
+    match Seq.toList xAs with
+     | [] -> never
+     | xA::xAs -> List.fold choice xA xAs
+
 module Convenience =
   let ( *<- ) xCh x = Ch.give xCh x
   let ( ~~ ) (xCh: Ch<'x>) = Ch.take xCh

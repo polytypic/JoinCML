@@ -27,6 +27,8 @@ module Alt =
 
   val after: ('x -> 'y) -> Alt<'x> -> Alt<'y>
 
+  val choose: seq<Alt<'x>> -> Alt<'x>
+
 [<AutoOpen>]
 module Convenience =
   val ( *<- ): Ch<'x> -> 'x -> Alt<unit>
