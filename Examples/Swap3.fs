@@ -39,9 +39,8 @@ module Swap3 =
          Alt.sync ~~cCh)
     let leader =
       ~~sCh <&> ~~sCh
-      |> Alt.afterAsync (fun ((x1, cCh1), (x2, cCh2)) ->
-         cCh1 *<- (x2, x0) <&> cCh2 *<- (x0, x1)
-         |> Alt.after (fun _ ->
-            (x1, x2))
-         |> Alt.sync)
+      |> Alt.after (fun ((x1, cCh1), (x2, cCh2)) ->
+         cCh1 +<- (x2, x0)
+         cCh2 +<- (x0, x1)
+         (x1, x2))
     client <|> leader
