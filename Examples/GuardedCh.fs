@@ -72,7 +72,7 @@ module GuardedCh =
                |> Alt.after (fun ((), ()) ->
                   gives.Remove giveNode
                   picks.Remove pickNode))))
-      |> subsets
+      |> powerset
       |> List.map (function
           | [] -> reqAlts
           | alt::alts ->

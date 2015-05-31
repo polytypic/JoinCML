@@ -24,7 +24,7 @@ module Server =
               requests.Remove node
               state))
         |> Alt.choose
-      subsets nodes
+      powerset nodes
       |> List.map (function
           | [] ->
             newRequestAlt <|> nacksAlt

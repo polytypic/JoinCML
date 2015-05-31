@@ -15,10 +15,10 @@ module internal Util =
         lp (n::ns) n.Next
     lp [] lst.First
 
-  let rec subsets = function
+  let rec powerset = function
     | [] -> [[]]
     | x::xs ->
-      let xss = subsets xs
+      let xss = powerset xs
       List.fold (fun xss xs -> (x::xs)::xss) xss xss
 
 module Alt =
