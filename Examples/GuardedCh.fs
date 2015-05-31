@@ -1,7 +1,21 @@
 namespace JoinCML.Examples
 
 // This example implements a synchronous channel with guarded receive.  This is
-// impossible to implement in CML.
+// impossible to implement in CML.  This implementation approach also does not
+// work with Conjoined Events:
+//
+//   https://kar.kent.ac.uk/33878/1/Conjoined.pdf
+//
+// as in the Haskell CHP library:
+//
+//   http://www.cs.kent.ac.uk/projects/ofa/chp/
+//
+// because Conjoined Events/CHP does not include `withNack`, which seems
+// essential for supporting user defined synchronization abstractions.  Note
+// that it should not be difficult to implement a layer implementing events with
+// nack support as "poc.cml" shows for Clojure core.async:
+//
+//   https://github.com/VesaKarvonen/poc.cml
 //
 // The basic idea behind the implementation is simple.  The internal server of
 // the guarded channel maintains lists of both givers and takers.  At each step
