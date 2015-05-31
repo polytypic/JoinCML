@@ -40,16 +40,20 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.fs" />
+    <Compile Include="Lottery.fsi" />
+    <Compile Include="Lottery.fs" />
+    <Compile Include="Server.fsi" />
+    <Compile Include="Server.fs" />
     <Compile Include="MVar.fsi" />
     <Compile Include="MVar.fs" />
     <Compile Include="Swap3.fsi" />
     <Compile Include="Swap3.fs" />
     <Compile Include="Latch.fsi" />
     <Compile Include="Latch.fs" />
-    <Compile Include="Lottery.fsi" />
-    <Compile Include="Lottery.fs" />
     <Compile Include="Swap3WithLatch.fsi" />
     <Compile Include="Swap3WithLatch.fs" />
+    <Compile Include="Unique.fsi" />
+    <Compile Include="Unique.fs" />
     <Compile Include="Dining.fs" />
     <Compile Include="Join.fs" />
     <Compile Include="Program.fs" />
