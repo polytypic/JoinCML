@@ -16,7 +16,5 @@ module Unique =
     |> Async.Start
     {requestCh = requestCh}
 
-  let unique u = Alt.withNack <| fun nack ->
-    let replyCh = Ch.create ()
-    u.requestCh +<- (nack, replyCh)
-    ~~replyCh
+  let unique u = Alt.requestWithNack u.requestCh <| fun nack replyCh ->
+    (nack, replyCh)
