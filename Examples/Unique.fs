@@ -6,11 +6,9 @@ type Unique = {requestCh: Ch<Alt<unit> * Ch<int>>}
 
 [<CompilationRepresentation (CompilationRepresentationFlags.ModuleSuffix)>]
 module Unique =
-  open Server
-
   let create () =
     let requestCh = Ch.create ()
-    serveAny 0 ~~requestCh
+    Server.serveAny 0 ~~requestCh
        <| fun (nack, _) -> nack
        <| fun (_, replyCh) i -> (replyCh *<- i, i + 1)
     |> Async.Start
