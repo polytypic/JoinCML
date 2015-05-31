@@ -55,6 +55,8 @@
     <Compile Include="Swap3WithLatch.fs" />
     <Compile Include="Unique.fsi" />
     <Compile Include="Unique.fs" />
+    <Compile Include="GuardedCh.fsi" />
+    <Compile Include="GuardedCh.fs" />
     <Compile Include="Dining.fs" />
     <Compile Include="Join.fs" />
     <Compile Include="Program.fs" />
