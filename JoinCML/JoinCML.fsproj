@@ -20,6 +20,7 @@
     </PlatformTarget>
     <GenerateTailCalls>true</GenerateTailCalls>
     <DocumentationFile>bin\Debug\JoinCML.XML</DocumentationFile>
+    <OtherFlags>--warnon:1182</OtherFlags>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -33,6 +34,7 @@
     <DefineConstants>
     </DefineConstants>
     <DocumentationFile>bin\Release\JoinCML.XML</DocumentationFile>
+    <OtherFlags>--warnon:1182</OtherFlags>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="mscorlib" />

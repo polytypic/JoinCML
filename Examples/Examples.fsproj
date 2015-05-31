@@ -11,13 +11,16 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
-    <Optimize>false</Optimize>
+    <Optimize>true</Optimize>
     <OutputPath>bin\Debug</OutputPath>
     <DefineConstants>DEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <Externalconsole>true</Externalconsole>
     <PlatformTarget>
     </PlatformTarget>
+    <GenerateTailCalls>true</GenerateTailCalls>
+    <OtherFlags>--warnon:1182</OtherFlags>
+    <DocumentationFile>bin\Debug\Examples.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -30,6 +33,8 @@
     </PlatformTarget>
     <DefineConstants>
     </DefineConstants>
+    <OtherFlags>--warnon:1182</OtherFlags>
+    <DocumentationFile>bin\Release\Examples.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="mscorlib" />
