@@ -68,18 +68,14 @@ module GuardedCh =
             let pick = pickNode.Value
             pick.guard give.value
             |> Option.map (fun pickAlt ->
-               give.replyCh *<- () <&> pickAlt
-               |> Alt.after (fun ((), ()) ->
+               give.replyCh *<- () .&. pickAlt
+               |> Alt.after (fun () ->
                   gives.Remove giveNode
                   picks.Remove pickNode))))
       |> powerset
       |> List.map (function
           | [] -> reqAlts
-          | alt::alts ->
-            alts
-            |> List.foldFrom alt (fun all alt ->
-               all <&> alt
-               |> Alt.after ignore))
+          | alt::alts -> alts |> List.foldFrom alt (.&.))
       |> Alt.choose
       |>>= server
     server () |> Async.Start

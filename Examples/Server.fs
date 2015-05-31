@@ -32,8 +32,7 @@ module Server =
             nodes
             |> List.foldFrom (replyTo node.Value state) (fun (replyAlt, state) node ->
                let (replyAlt', state) = replyTo node.Value state
-               (replyAlt <&> replyAlt' |> Alt.after ignore,
-                state))
+               (replyAlt .&. replyAlt', state))
             |> fun (replyAlt, state) ->
                  replyAlt
                  |> Alt.after (fun () ->
