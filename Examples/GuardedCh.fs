@@ -1,12 +1,23 @@
 namespace JoinCML.Examples
 
+// This example implements a synchronous channel with guarded receive.  This is
+// impossible to implement in CML.
+//
+// The basic idea behind the implementation is simple.  The internal server of
+// the guarded channel maintains lists of both givers and takers.  At each step
+// the server tries to match givers to takers.  The powerset of joins of
+// matching pairs is offered for synchronization.
+//
+// The existence of a guarded channel abstraction essentially shows that
+// join-calculus with pattern matching can be implemented in JoinCML.
+
 open System.Collections.Generic
 open JoinCML
 
 type GuardedGive<'x> = {nack: Alt<unit>; value: 'x; replyCh: Ch<unit>}
-type GuardedTake<'x> = {nack: Alt<unit>; guard: 'x -> bool; replyCh: Ch<'x>}
+type GuardedPick<'x> = {nack: Alt<unit>; guard: 'x -> option<Alt<unit>>}
 
-type GuardedCh<'x> = {giveCh: Ch<GuardedGive<'x>>; takeCh: Ch<GuardedTake<'x>>}
+type GuardedCh<'x> = {giveCh: Ch<GuardedGive<'x>>; pickCh: Ch<GuardedPick<'x>>}
 
 module GuardedCh =
   let mkReqAlt (reqCh: Ch<'req>)
@@ -26,30 +37,27 @@ module GuardedCh =
 
   let create () : GuardedCh<'x> =
     let giveCh = Ch.create ()
-    let takeCh = Ch.create ()
+    let pickCh = Ch.create ()
     let gives = LinkedList<GuardedGive<'x>> ()
-    let takes = LinkedList<GuardedTake<'x>> ()
+    let picks = LinkedList<GuardedPick<'x>> ()
     let rec server () =
       let reqAlts =
         (mkReqAlt giveCh gives <| fun r -> r.nack) <|>
-        (mkReqAlt takeCh takes <| fun r -> r.nack)
-      let ts = nodes takes
+        (mkReqAlt pickCh picks <| fun r -> r.nack)
+      let ts = nodes picks
       let gs = nodes gives
       gs
       |> List.collect (fun giveNode ->
          let give = giveNode.Value
          ts
-         |> List.choose (fun takeNode ->
-            let take = takeNode.Value
-            if take.guard give.value then
-              give.replyCh *<- () <&>
-              take.replyCh *<- give.value
-              |> Alt.after (fun ((), ()) ->
-                 gives.Remove giveNode
-                 takes.Remove takeNode)
-              |> Some
-            else
-              None))
+         |> List.choose (fun pickNode ->
+            let pick = pickNode.Value
+            pick.guard give.value
+            |> Option.map (fun pickAlt ->
+               give.replyCh *<- () <&> pickAlt
+               |> Alt.after (fun ((), ()) ->
+                  gives.Remove giveNode
+                  picks.Remove pickNode))))
       |> subsets
       |> List.map (function
           | [] -> reqAlts
@@ -61,12 +69,12 @@ module GuardedCh =
       |> Alt.choose
       |>>= server
     server () |> Async.Start
-    {giveCh = giveCh; takeCh = takeCh}
+    {giveCh = giveCh; pickCh = pickCh}
 
   let give guardedCh value =
     Alt.requestWithNack guardedCh.giveCh <| fun nack replyCh ->
     {nack = nack; value = value; replyCh = replyCh}
 
-  let take guardedCh guard =
-    Alt.requestWithNack guardedCh.takeCh <| fun nack replyCh ->
-    {nack = nack; guard = guard; replyCh = replyCh}
+  let pick guard guardedCh =
+    Alt.requestWithNack guardedCh.pickCh <| fun nack replyCh ->
+    {nack = nack; guard = guard >> Option.map (fun y -> replyCh *<- y)}
