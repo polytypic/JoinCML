@@ -34,15 +34,15 @@ type GuardedPick<'x> = {nack: Alt<unit>; guard: 'x -> option<Alt<unit>>}
 type GuardedCh<'x> = {giveCh: Ch<GuardedGive<'x>>; pickCh: Ch<GuardedPick<'x>>}
 
 module GuardedCh =
-  let mkReqAlt (reqCh: Ch<'req>)
-               (reqs: LinkedList<'req>)
-               (nackOf: 'req -> Alt<unit>) =
+  let mkQueryAlt (queryCh: Ch<'q>)
+                 (queries: LinkedList<'q>)
+                 (nackOf: 'q -> Alt<unit>) =
     let nacksAlt =
-      nodes reqs
+      nodes queries
       |> List.map (fun node ->
-         nackOf node.Value ^-> fun () -> reqs.Remove node)
+         nackOf node.Value ^-> fun () -> queries.Remove node)
       |> Alt.choose
-    let newReqAlt = reqCh ^-> (newLinkedListNode >> reqs.AddLast)
+    let newReqAlt = queryCh ^-> (newLinkedListNode >> queries.AddLast)
     nacksAlt <|> newReqAlt
 
   let create () : GuardedCh<'x> =
@@ -51,15 +51,15 @@ module GuardedCh =
     let gives = LinkedList<GuardedGive<'x>> ()
     let picks = LinkedList<GuardedPick<'x>> ()
     let rec server () =
-      let reqAlts =
-        mkReqAlt giveCh gives (fun r -> r.nack) <|>
-        mkReqAlt pickCh picks (fun r -> r.nack)
-      let ts = nodes picks
-      let gs = nodes gives
-      gs
+      let queryAlts =
+            mkQueryAlt giveCh gives (fun r -> r.nack)
+        <|> mkQueryAlt pickCh picks (fun r -> r.nack)
+      let pickNodes = nodes picks
+      let giveNodes = nodes gives
+      giveNodes
       |> List.collect (fun giveNode ->
          let give = giveNode.Value
-         ts
+         pickNodes
          |> List.choose (fun pickNode ->
             let pick = pickNode.Value
             pick.guard give.value
@@ -70,7 +70,7 @@ module GuardedCh =
                      picks.Remove pickNode)))
       |> powerset
       |> List.map (function
-          | [] -> reqAlts
+          | [] -> queryAlts
           | alt::alts -> List.fold (-&-) alt alts)
       |> Alt.choose
       |>>= server
