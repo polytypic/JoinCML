@@ -35,12 +35,12 @@ module Swap3 =
     let client = Alt.before <| fun () ->
       let cCh = Ch.create ()
       (x0, cCh) --> sCh
-      |> Alt.afterAsync (fun () ->
-         Alt.sync ~~cCh)
+      |>~ fun () ->
+            Alt.sync ~~cCh
     let leader =
       ~~sCh <&> ~~sCh
-      |> Alt.after (fun ((x1, cCh1), (x2, cCh2)) ->
-         (x2, x0) +-> cCh1
-         (x0, x1) +-> cCh2
-         (x1, x2))
+      |>- fun ((x1, cCh1), (x2, cCh2)) ->
+            (x2, x0) +-> cCh1
+            (x0, x1) +-> cCh2
+            (x1, x2)
     client <|> leader

@@ -12,8 +12,6 @@ module Swap3WithLatch =
   let swap {sw3 = sw3; lot = lot; lat = lat} x =
     let swapped =
       Swap3.swap sw3 x <&. Lottery.option lot (Latch.dec lat)
-      |> Alt.after Some
-    let latched =
-      Latch.is0 lat
-      |> Alt.after (stable None)
+      |>- Some
+    let latched = Latch.is0 lat |>= None
     swapped <|> latched

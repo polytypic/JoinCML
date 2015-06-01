@@ -25,8 +25,6 @@ module Alt =
   val once: 'x -> Alt<'x>
   val never<'x> : Alt<'x>
 
-  val after: ('x -> 'y) -> Alt<'x> -> Alt<'y>
-
   val choose: seq<Alt<'x>> -> Alt<'x>
 
 [<AutoOpen>]
@@ -36,6 +34,10 @@ module Convenience =
   val (~~): Ch<'x> -> Alt<'x>
 
   val (+->): 'x -> Ch<'x> -> unit
+
+  val (|>~): Alt<'x> -> ('x -> Async<'y>) -> Alt<'y>
+  val (|>-): Alt<'x> -> ('x ->       'y ) -> Alt<'y>
+  val (|>=): Alt<'x> ->              'y   -> Alt<'y>
 
   val (<|>): Alt<'x> -> Alt<'x> -> Alt<'x>
 

@@ -38,9 +38,6 @@ module Alt =
     
   let never<'x> : Alt<'x> = Ch.create () |> Ch.take
 
-  let after (x2y: 'x -> 'y) (xA: Alt<'x>) : Alt<'y> =
-    afterAsync (x2y >> async.Return) xA
-
   let choose xAs = before <| fun () ->
     match Seq.toList xAs with
      | [] -> never
@@ -50,12 +47,15 @@ module Convenience =
   let (-->) x xCh = Ch.give xCh x
   let (~~) (xCh: Ch<'x>) = Ch.take xCh
   let (+->) x xCh = x --> xCh |> Alt.sync |> Async.Start
+  let (|>~) xA x2yA = Alt.afterAsync x2yA xA
+  let (|>-) xA x2y = xA |>~ (x2y >> async.Return)
+  let (|>=) xA y = xA |>- fun _ -> y
   let (<|>) xA1 xA2 = Alt.choice xA1 xA2
   let (<&>) xA yA = Alt.join xA yA
-  let (.&>) xA yA = Alt.join xA yA |> Alt.after (fun (_, y) -> y)
-  let (<&.) xA yA = Alt.join xA yA |> Alt.after (fun (x, _) -> x)
-  let (.&.) xA yA = Alt.join xA yA |> Alt.after (fun (_, _) -> ())
-  let (<*>) x2yA xA = Alt.join x2yA xA |> Alt.after (fun (x2y, x) -> x2y x)
+  let (.&>) xA yA = Alt.join xA yA |>- fun (_, y) -> y
+  let (<&.) xA yA = Alt.join xA yA |>- fun (x, _) -> x
+  let (.&.) xA yA = Alt.join xA yA |>- fun (_, _) -> ()
+  let (<*>) x2yA xA = Alt.join x2yA xA |>- fun (x2y, x) -> x2y x
   let (>>=) xA x2yA = async.Bind (xA, x2yA)
   let result x = async.Return x
   let (|>>=) xA x2yA = xA |> Alt.sync >>= x2yA

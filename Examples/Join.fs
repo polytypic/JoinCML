@@ -29,10 +29,10 @@ module Join =
     | AsyncCh of Ch<'x>
 
     /// Join pattern to take and bind a value from the channel.
-    static member (~+.) (AsyncCh c) = ~~c |> Alt.after (fun x x2y -> x2y x)
+    static member (~+.) (AsyncCh c) = ~~c |>- fun x x2y -> x2y x
 
     /// Join pattern to take and ignore a value from the channel.
-    static member (~-.) (AsyncCh c) = ~~c |> Alt.after (fun _ y -> y)
+    static member (~-.) (AsyncCh c) = ~~c |>- fun _ y -> y
 
   /// Creates a new asynchronous channel.
   let asyncCh () = AsyncCh <| Ch.create ()
@@ -42,11 +42,10 @@ module Join =
 
   /// Join of two join patterns.
   let (.&.) lhs rhs =
-    lhs <&> rhs |> Alt.after (fun (xyz2yz, yz2z) xyz -> yz2z (xyz2yz xyz))
+    lhs <&> rhs |>- fun (xyz2yz, yz2z) xyz -> yz2z (xyz2yz xyz)
 
   /// Action of join pattern.
-  let (|~>) xy2y xy =
-    xy2y |> Alt.after (fun xy2y -> xy2y xy)
+  let (|~>) xy2y xy = xy2y |>- fun xy2y -> xy2y xy
 
   // NOTE: The combinators `+.`, `-.`, `.&.` and `|~>` basically use a form of
   // functional unparsing (http://www.brics.dk/RS/98/12/BRICS-RS-98-12.pdf) to
@@ -59,13 +58,11 @@ module Join =
 
     /// Join pattern to take and bind a value and the reply address from the
     /// channel.
-    static member (~+.) (SyncCh c) =
-      ~~c |> Alt.after (fun (x, r) xr2y -> xr2y x r)
+    static member (~+.) (SyncCh c) = ~~c |>- fun (x, r) xr2y -> xr2y x r
 
     /// Join pattern to take and ignore a value, but bind the reply address from
     /// the channel.
-    static member (~-.) (SyncCh c) =
-      ~~c |> Alt.after (fun (_, r) r2y -> r2y r)
+    static member (~-.) (SyncCh c) = ~~c |>- fun (_, r) r2y -> r2y r
 
   /// Creates a call-reply channel.
   let syncCh () : SyncCh<'x, 'y> = SyncCh <| Ch.create ()
