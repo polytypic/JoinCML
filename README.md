@@ -52,6 +52,9 @@ let (<*>) x2yA xA =
 
 Unlike TE, JoinCML essentially retains all of CML as a subset, including
 negative acknowledgments and the semantics of having only a single commit point.
+See the full [JoinCML.fsi](JoinCML/JoinCML.fsi) signature including many
+convenience operations.
+
 
 Unsurprisingly, it appears that basically the same idea has already been
 discovered earlier in the form of
