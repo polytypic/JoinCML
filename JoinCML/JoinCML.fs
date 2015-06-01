@@ -51,7 +51,7 @@ module Convenience =
   let (-~>) x xCh = x --> xCh |> Alt.sync |> Async.Start
   let (<~->) requestCh mkReq = Alt.withNack <| fun nack ->
     let replyCh = Ch.create ()
-    mkReq nack replyCh -~> requestCh
+    mkReq replyCh nack -~> requestCh
     replyCh
   let (<-~>) requestCh mkReq = Alt.before <| fun () ->
     let replyCh = Ch.create ()

@@ -14,4 +14,4 @@ module Unique =
     |> Async.Start
     {requestCh = requestCh}
 
-  let unique u = u.requestCh <~-> fun nack replyCh -> (nack, replyCh)
+  let unique u = u.requestCh <~-> fun replyCh nack -> (nack, replyCh)
