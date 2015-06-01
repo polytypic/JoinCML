@@ -2,7 +2,7 @@ namespace JoinCML.Examples
 
 // This implements a Concurrent Haskell style MVar:
 //
-//  https://hackage.haskell.org/package/base-4.8.0.0/docs/Control-Concurrent-MVar.html
+//   https://hackage.haskell.org/package/base-4.8.0.0/docs/Control-Concurrent-MVar.html
 //
 // rather than a CML style mvar:
 //
