@@ -39,7 +39,7 @@ module Alt =
   /// Perform action before alternative construction.
   val before: (unit -> #Alt<'x>) -> Alt<'x>
 
-  /// Alternative that is enabled once with given value.
+  /// Alternative enabled once with given value.
   val once: 'x -> Alt<'x>
 
   /// Never enabled alternative.
@@ -91,9 +91,9 @@ module Convenience =
   val (^=>): after: Alt<'x> -> value: 'y -> Alt<'y>
 
   /// Exclusive choice.
-  val (<|>): this: Alt<'x> -> that: Alt<'x> -> Alt<'x>
+  val (<|>): eitherThis: Alt<'x> -> orThat: Alt<'x> -> Alt<'x>
 
-  /// Applicative join.
+  /// Join and apply.
   val (<*>): Alt<'x -> 'y> -> Alt<'x> -> Alt<'y>
 
   /// Sync and continue async.
