@@ -43,9 +43,9 @@ module Convenience =
   val (<|>): Alt<'x> -> Alt<'x> -> Alt<'x>
 
   val (<&>): Alt<'x> -> Alt<'y> -> Alt<'x * 'y>
-  val (.&>): Alt<_> -> Alt<'y> -> Alt<'y>
-  val (<&.): Alt<'x> -> Alt<_> -> Alt<'x>
-  val (.&.): Alt<_> -> Alt<_> -> Alt<unit>
+  val (.&>): Alt<_>  -> Alt<'y> -> Alt<'y>
+  val (<&.): Alt<'x> -> Alt<_>  -> Alt<'x>
+  val (.&.): Alt<_>  -> Alt<_>  -> Alt<unit>
 
   val (<*>): Alt<'x -> 'y> -> Alt<'x> -> Alt<'y>
 
