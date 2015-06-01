@@ -54,40 +54,44 @@ module Convenience =
   // NOTE: Operators below are listed from highest to lowest precedence.
 
   /// Give message synchronously.
-  val (%<-): Ch<'x> -> 'x -> Alt<unit>
+  val (%<-): channel: Ch<'x> -> message: 'x -> Alt<unit>
 
   /// Send message asynchronously.
-  val (%<~): Ch<'x> -> 'x -> unit
+  val (%<~): channel: Ch<'x> -> message: 'x -> unit
 
-  /// Commit on query and await for response.
-  val (%<-~>): Ch<'q> -> (Ch<'r> -> 'q) -> Alt<'r>
+  /// Commit on query and await for reply.
+  val (%<-~>): queryCh: Ch<'q>
+            -> queryFromReplyCh: (Ch<'r> -> 'q)
+            -> Alt<'r>
 
-  /// Send query and commit on response. 
-  val (%<~->): Ch<'q> -> (Ch<'r> -> Alt<unit> -> 'q) -> Alt<'r>
+  /// Send query and commit on reply.
+  val (%<~->): queryCh: Ch<'q>
+            -> queryFromReplyChAndNack: (Ch<'r> -> Alt<unit> -> 'q)
+            -> Alt<'r>
 
   /// Join and keep both.
-  val (+&+): Alt<'x> -> Alt<'y> -> Alt<'x * 'y>
+  val (+&+): fst: Alt<'x> -> snd: Alt<'y> -> Alt<'x * 'y>
 
   /// Join and keep second.
-  val (-&+): Alt<_>  -> Alt<'y> -> Alt<'y>
+  val (-&+): fst: Alt<'x> -> snd: Alt<'y> -> Alt<'y>
 
   /// Join and keep first.
-  val (+&-): Alt<'x> -> Alt<_> -> Alt<'x>
+  val (+&-): fst: Alt<'x> -> snd: Alt<'y> -> Alt<'x>
 
   /// Join and keep neither.
-  val (-&-): Alt<_> -> Alt<_> -> Alt<unit>
+  val (-&-): fst: Alt<'x> -> snd: Alt<'y> -> Alt<unit>
 
   /// Continue with async after commit.
-  val (^~>): Alt<'x> -> ('x -> Async<'y>) -> Alt<'y>
+  val (^~>): after: Alt<'x> -> action: ('x -> Async<'y>) -> Alt<'y>
 
   /// Continue with function after commit.
-  val (^->): Alt<'x> -> ('x -> 'y) -> Alt<'y>
+  val (^->): after: Alt<'x> -> action: ('x -> 'y) -> Alt<'y>
 
   /// Continue with value after commit.
-  val (^=>): Alt<'x> -> 'y -> Alt<'y>
+  val (^=>): after: Alt<'x> -> value: 'y -> Alt<'y>
 
   /// Exclusive choice.
-  val (<|>): Alt<'x> -> Alt<'x> -> Alt<'x>
+  val (<|>): this: Alt<'x> -> that: Alt<'x> -> Alt<'x>
 
   /// Applicative join.
   val (<*>): Alt<'x -> 'y> -> Alt<'x> -> Alt<'y>
