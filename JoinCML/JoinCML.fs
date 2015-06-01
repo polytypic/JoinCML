@@ -49,13 +49,13 @@ module Convenience =
   let (^=>) xA y = xA ^-> fun _ -> y
   let (%<-) xCh x = Ch.give xCh x
   let (%<~) xCh x = xCh %<- x |> Alt.sync |> Async.Start
-  let (%<~->) requestCh mkReq = Alt.withNack <| fun nack ->
+  let (%<~->) queryCh queryFromReplyChAndNack = Alt.withNack <| fun nack ->
     let replyCh = Ch.create ()
-    requestCh %<~ mkReq replyCh nack
+    queryCh %<~ queryFromReplyChAndNack replyCh nack
     replyCh
-  let (%<-~>) requestCh mkReq = Alt.before <| fun () ->
+  let (%<-~>) queryCh queryFromReplyCh = Alt.before <| fun () ->
     let replyCh = Ch.create ()
-    requestCh %<- mkReq replyCh ^~> fun () -> Alt.sync replyCh
+    queryCh %<- queryFromReplyCh replyCh ^~> fun () -> Alt.sync replyCh
   let (<|>) xA1 xA2 = Alt.choice xA1 xA2
   let (+&+) xA yA = Alt.join xA yA
   let (-&+) xA yA = xA +&+ yA ^-> fun (_, y) -> y
