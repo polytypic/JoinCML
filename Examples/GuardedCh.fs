@@ -78,9 +78,9 @@ module GuardedCh =
     {giveCh = giveCh; pickCh = pickCh}
 
   let give guardedCh value =
-    Alt.requestWithNack guardedCh.giveCh <| fun nack replyCh ->
-    {nack = nack; value = value; replyCh = replyCh}
+    guardedCh.giveCh <~-> fun nack replyCh ->
+      {nack = nack; value = value; replyCh = replyCh}
 
   let pick guard guardedCh =
-    Alt.requestWithNack guardedCh.pickCh <| fun nack replyCh ->
-    {nack = nack; guard = guard >> Option.map (Ch.give replyCh)}
+    guardedCh.pickCh <~-> fun nack replyCh ->
+      {nack = nack; guard = guard >> Option.map (Ch.give replyCh)}

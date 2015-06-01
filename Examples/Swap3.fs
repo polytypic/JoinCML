@@ -17,7 +17,7 @@ namespace JoinCML.Examples
 // while the JoinCML implementation takes two messages from two clients
 // simultaneously:
 //
-//   ~~sCh <&> ~~sCh
+//   sCh <&> sCh
 //
 // The reason why JoinCML allows n-way rendezvous unlike CML is that the `join`
 // (or `<&>`) combinator effectively allows joining an m-way rendezvous and a
@@ -32,11 +32,8 @@ module Swap3 =
   let create () = Swap3 (Ch.create ())
 
   let swap (Swap3 sCh: Swap3<_>) x0 =
-    let client = Alt.before <| fun () ->
-      let cCh = Ch.create ()
-      (x0, cCh) --> sCh
-      |>~ fun () ->
-            Alt.sync cCh
+    let client =
+      sCh <-~> fun cCh -> (x0, cCh)
     let leader =
       sCh <&> sCh
       |>- fun ((x1, cCh1), (x2, cCh2)) ->

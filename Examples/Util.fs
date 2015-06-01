@@ -22,9 +22,3 @@ module internal Util =
     | x::xs ->
       let xss = powerset xs
       List.fold (fun xss xs -> (x::xs)::xss) xss xss
-
-module Alt =
-  let requestWithNack requestCh mkReq = Alt.withNack <| fun nack ->
-    let replyCh = Ch.create ()
-    mkReq nack replyCh -~> requestCh
-    replyCh

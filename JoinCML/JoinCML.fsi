@@ -33,6 +33,9 @@ module Convenience =
 
   val (-~>): 'x -> Ch<'x> -> unit
 
+  val (<-~>): Ch<'req> -> (Ch<'rep> -> 'req) -> Alt<'rep>
+  val (<~->): Ch<'req> -> (Alt<unit> -> Ch<'rep> -> 'req) -> Alt<'rep>
+
   val (|>~): Alt<'x> -> ('x -> Async<'y>) -> Alt<'y>
   val (|>-): Alt<'x> -> ('x ->       'y ) -> Alt<'y>
   val (|>=): Alt<'x> ->              'y   -> Alt<'y>
