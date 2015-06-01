@@ -75,7 +75,7 @@ module GuardedCh =
       |> powerset
       |> List.map (function
           | [] -> reqAlts
-          | alt::alts -> alts |> List.foldFrom alt (.&.))
+          | alt::alts -> List.fold (.&.) alt alts)
       |> Alt.choose
       |>>= server
     server () |> Async.Start
