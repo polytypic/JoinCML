@@ -4,7 +4,7 @@ open JoinCML
 
 module Server =
   val serveAny: initial: 'state
-             -> requestAlt: Alt<'request>
-             -> nackOf: ('request -> Alt<unit>)
-             -> replyTo: ('request -> 'state -> Alt<unit> * 'state)
+             -> queryAlt: Alt<'query>
+             -> nackOf: ('query -> #Alt<unit>)
+             -> replyTo: ('query -> 'state -> Alt<unit> * 'state)
              -> Async<unit>
