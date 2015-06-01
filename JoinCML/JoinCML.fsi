@@ -104,3 +104,12 @@ module Convenience =
 
   /// Async return.
   val result: 'x -> Async<'x>
+
+  /// Extensions for async builder.
+  type AsyncBuilder with
+    /// Synchronize alternative and bind result.
+    member Bind: Alt<'x> * ('x -> Async<'y>) -> Async<'y>
+
+    /// Synchronize alternative and return result.
+    member ReturnFrom: Alt<'x> -> Async<'x>
+

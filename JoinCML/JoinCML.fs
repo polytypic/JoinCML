@@ -65,3 +65,7 @@ module Convenience =
   let (>>=) xA x2yA = async.Bind (xA, x2yA)
   let result x = async.Return x
   let (|>>=) xA x2yA = xA |> Alt.sync >>= x2yA
+
+  type AsyncBuilder with
+    member t.Bind (xA, x2yA) = xA |>>= x2yA
+    member t.ReturnFrom xA = Alt.sync xA

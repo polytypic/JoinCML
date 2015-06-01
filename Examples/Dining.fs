@@ -20,13 +20,15 @@ module Dining =
   let rec runPhilosopher (rnd: Random) name lhsStick rhsStick = async {
     while true do
       printfn "%s is hungry.  Taking chopsticks..." name
-      let! (lhsIdx, rhsIdx) =
-        MVar.take lhsStick +&+ MVar.take rhsStick |> Alt.sync
+      let! (lhsIdx, rhsIdx) = MVar.take lhsStick +&+ MVar.take rhsStick
+
       printfn "%s got chopsticks %d and %d.  Eating..." name lhsIdx rhsIdx
       do! Async.Sleep (rnd.Next (0, 1000))
+
       printfn "%s is done eating.  Releasing chopsticks..." name
-      do! MVar.fill lhsStick lhsIdx |> Alt.sync
-      do! MVar.fill rhsStick rhsIdx |> Alt.sync
+      do! MVar.fill lhsStick lhsIdx
+      do! MVar.fill rhsStick rhsIdx
+
       printfn "%s is thinking..." name
       do! Async.Sleep (rnd.Next (0, 1000))
   }

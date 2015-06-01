@@ -71,7 +71,7 @@ module Join =
   let call (SyncCh x2y: SyncCh<'x, 'y>) (x: 'x) : Async<'y> = async {
     let yCh = Ch.create ()
     x2y %<~ (x, yCh)
-    return! yCh |> Alt.sync
+    return! yCh
   }
 
   /// Reply to a call.
