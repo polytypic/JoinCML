@@ -68,7 +68,7 @@ module GuardedCh =
             let pick = pickNode.Value
             pick.guard give.value
             |> Option.map (fun pickAlt ->
-               give.replyCh *<- () .&. pickAlt
+               () --> give.replyCh .&. pickAlt
                |> Alt.after (fun () ->
                   gives.Remove giveNode
                   picks.Remove pickNode))))
@@ -87,4 +87,4 @@ module GuardedCh =
 
   let pick guard guardedCh =
     Alt.requestWithNack guardedCh.pickCh <| fun nack replyCh ->
-    {nack = nack; guard = guard >> Option.map (fun y -> replyCh *<- y)}
+    {nack = nack; guard = guard >> Option.map (Ch.give replyCh)}

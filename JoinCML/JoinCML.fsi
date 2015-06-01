@@ -31,22 +31,22 @@ module Alt =
 
 [<AutoOpen>]
 module Convenience =
-  val ( *<- ): Ch<'x> -> 'x -> Alt<unit>
+  val (-->): 'x -> Ch<'x> -> Alt<unit>
 
-  val ( ~~ ): Ch<'x> -> Alt<'x>
+  val (~~): Ch<'x> -> Alt<'x>
 
-  val ( +<- ): Ch<'x> -> 'x -> unit
+  val (+->): 'x -> Ch<'x> -> unit
 
-  val ( <|> ): Alt<'x> -> Alt<'x> -> Alt<'x>
+  val (<|>): Alt<'x> -> Alt<'x> -> Alt<'x>
 
-  val ( <&> ): Alt<'x> -> Alt<'y> -> Alt<'x * 'y>
-  val ( .&> ): Alt<_> -> Alt<'y> -> Alt<'y>
-  val ( <&. ): Alt<'x> -> Alt<_> -> Alt<'x>
-  val ( .&. ): Alt<_> -> Alt<_> -> Alt<unit>
+  val (<&>): Alt<'x> -> Alt<'y> -> Alt<'x * 'y>
+  val (.&>): Alt<_> -> Alt<'y> -> Alt<'y>
+  val (<&.): Alt<'x> -> Alt<_> -> Alt<'x>
+  val (.&.): Alt<_> -> Alt<_> -> Alt<unit>
 
-  val ( <*> ): Alt<'x -> 'y> -> Alt<'x> -> Alt<'y>
+  val (<*>): Alt<'x -> 'y> -> Alt<'x> -> Alt<'y>
 
-  val ( >>= ): Async<'x> -> ('x -> Async<'y>) -> Async<'y>
+  val (>>=): Async<'x> -> ('x -> Async<'y>) -> Async<'y>
   val result: 'x -> Async<'x>
 
-  val ( |>>= ): Alt<'x> -> ('x -> Async<'y>) -> Async<'y>
+  val (|>>=): Alt<'x> -> ('x -> Async<'y>) -> Async<'y>

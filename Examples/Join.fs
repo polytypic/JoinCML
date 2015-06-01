@@ -38,7 +38,7 @@ module Join =
   let asyncCh () = AsyncCh <| Ch.create ()
 
   /// Sends a value to the asynchronous channel.
-  let (<~) (AsyncCh c) x = c +<- x
+  let (<~) (AsyncCh c) x = x +-> c
 
   /// Join of two join patterns.
   let (.&.) lhs rhs =
@@ -73,12 +73,12 @@ module Join =
   /// Call and wait for reply.
   let call (SyncCh x2y: SyncCh<'x, 'y>) (x: 'x) : Async<'y> = async {
     let yCh = Ch.create ()
-    x2y +<- (x, yCh)
+    (x, yCh) +-> x2y
     return! ~~yCh |> Alt.sync
   }
 
   /// Reply to a call.
-  let replyTo r y = r +<- y
+  let replyTo r y = y +-> r
 
   /// Spawns a process to repeatedly match a set of join patterns.
   let join = function

@@ -47,15 +47,15 @@ module Alt =
      | xA::xAs -> List.fold choice xA xAs
 
 module Convenience =
-  let ( *<- ) xCh x = Ch.give xCh x
-  let ( ~~ ) (xCh: Ch<'x>) = Ch.take xCh
-  let ( +<- ) xCh x = xCh *<- x |> Alt.sync |> Async.Start
-  let ( <|> ) xA1 xA2 = Alt.choice xA1 xA2
-  let ( <&> ) xA yA = Alt.join xA yA
-  let ( .&> ) xA yA = Alt.join xA yA |> Alt.after (fun (_, y) -> y)
-  let ( <&. ) xA yA = Alt.join xA yA |> Alt.after (fun (x, _) -> x)
-  let ( .&. ) xA yA = Alt.join xA yA |> Alt.after (fun (_, _) -> ())
-  let ( <*> ) x2yA xA = Alt.join x2yA xA |> Alt.after (fun (x2y, x) -> x2y x)
-  let ( >>= ) xA x2yA = async.Bind (xA, x2yA)
+  let (-->) x xCh = Ch.give xCh x
+  let (~~) (xCh: Ch<'x>) = Ch.take xCh
+  let (+->) x xCh = x --> xCh |> Alt.sync |> Async.Start
+  let (<|>) xA1 xA2 = Alt.choice xA1 xA2
+  let (<&>) xA yA = Alt.join xA yA
+  let (.&>) xA yA = Alt.join xA yA |> Alt.after (fun (_, y) -> y)
+  let (<&.) xA yA = Alt.join xA yA |> Alt.after (fun (x, _) -> x)
+  let (.&.) xA yA = Alt.join xA yA |> Alt.after (fun (_, _) -> ())
+  let (<*>) x2yA xA = Alt.join x2yA xA |> Alt.after (fun (x2y, x) -> x2y x)
+  let (>>=) xA x2yA = async.Bind (xA, x2yA)
   let result x = async.Return x
-  let ( |>>= ) xA x2yA = xA |> Alt.sync >>= x2yA
+  let (|>>=) xA x2yA = xA |> Alt.sync >>= x2yA
