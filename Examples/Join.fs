@@ -29,23 +29,23 @@ module Join =
     | AsyncCh of Ch<'x>
 
     /// Join pattern to take and bind a value from the channel.
-    static member (~+.) (AsyncCh c) = c |>- fun x x2y -> x2y x
+    static member (~+.) (AsyncCh c) = c ^-> fun x x2y -> x2y x
 
     /// Join pattern to take and ignore a value from the channel.
-    static member (~-.) (AsyncCh c) = c |>- fun _ y -> y
+    static member (~-.) (AsyncCh c) = c ^-> fun _ y -> y
 
   /// Creates a new asynchronous channel.
   let asyncCh () = AsyncCh <| Ch.create ()
 
   /// Sends a value to the asynchronous channel.
-  let (<~) (AsyncCh c) x = x -~> c
+  let (<~) (AsyncCh c) x = c %<~ x
 
   /// Join of two join patterns.
   let (.&.) lhs rhs =
-    lhs <&> rhs |>- fun (xyz2yz, yz2z) xyz -> yz2z (xyz2yz xyz)
+    lhs +&+ rhs ^-> fun (xyz2yz, yz2z) xyz -> yz2z (xyz2yz xyz)
 
   /// Action of join pattern.
-  let (|~>) xy2y xy = xy2y |>- fun xy2y -> xy2y xy
+  let (|~>) xy2y xy = xy2y ^-> fun xy2y -> xy2y xy
 
   // NOTE: The combinators `+.`, `-.`, `.&.` and `|~>` basically use a form of
   // functional unparsing (http://www.brics.dk/RS/98/12/BRICS-RS-98-12.pdf) to
@@ -58,11 +58,11 @@ module Join =
 
     /// Join pattern to take and bind a value and the reply address from the
     /// channel.
-    static member (~+.) (SyncCh c) = c |>- fun (x, r) xr2y -> xr2y x r
+    static member (~+.) (SyncCh c) = c ^-> fun (x, r) xr2y -> xr2y x r
 
     /// Join pattern to take and ignore a value, but bind the reply address from
     /// the channel.
-    static member (~-.) (SyncCh c) = c |>- fun (_, r) r2y -> r2y r
+    static member (~-.) (SyncCh c) = c ^-> fun (_, r) r2y -> r2y r
 
   /// Creates a call-reply channel.
   let syncCh () : SyncCh<'x, 'y> = SyncCh <| Ch.create ()
@@ -70,12 +70,12 @@ module Join =
   /// Call and wait for reply.
   let call (SyncCh x2y: SyncCh<'x, 'y>) (x: 'x) : Async<'y> = async {
     let yCh = Ch.create ()
-    (x, yCh) -~> x2y
+    x2y %<~ (x, yCh)
     return! yCh |> Alt.sync
   }
 
   /// Reply to a call.
-  let replyTo r y = y -~> r
+  let replyTo r y = r %<~ y
 
   /// Spawns a process to repeatedly match a set of join patterns.
   let join = function

@@ -10,8 +10,8 @@ module Unique =
     let requestCh = Ch.create ()
     Server.serveAny 0 requestCh
        <| fun (nack, _) -> nack
-       <| fun (_, replyCh) i -> (i --> replyCh, i + 1)
+       <| fun (_, replyCh) i -> (replyCh %<- i, i + 1)
     |> Async.Start
     {requestCh = requestCh}
 
-  let unique u = u.requestCh <~-> fun replyCh nack -> (nack, replyCh)
+  let unique u = u.requestCh %<~-> fun replyCh nack -> (nack, replyCh)

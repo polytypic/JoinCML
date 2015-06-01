@@ -9,15 +9,15 @@ module Lottery =
   let create n =
     assert (0 < n)
     let lottery = Ch.create ()
-    let winner = () --> lottery
+    let winner = lottery %<- ()
     let loser = lottery
     let rec mk op = function
       | 0 -> op
-      | n -> mk (op .&. winner) (n-1)
+      | n -> mk (op -&- winner) (n-1)
     let op = mk loser (n-1)
     let rec forever () = op |>>= forever
     forever () |> Async.Start
     {winner = winner; loser = loser}
   let option l op =
-    (l.winner .&> op |>- Some) <|>
-    (l.loser         |>= None)
+    l.winner -&+ op ^-> Some <|>
+    l.loser         ^=> None

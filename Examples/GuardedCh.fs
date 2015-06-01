@@ -40,9 +40,9 @@ module GuardedCh =
     let nacksAlt =
       nodes reqs
       |> List.map (fun node ->
-         nackOf node.Value |>- fun () -> reqs.Remove node)
+         nackOf node.Value ^-> fun () -> reqs.Remove node)
       |> Alt.choose
-    let newReqAlt = reqCh |>- (newLinkedListNode >> reqs.AddLast)
+    let newReqAlt = reqCh ^-> (newLinkedListNode >> reqs.AddLast)
     nacksAlt <|> newReqAlt
 
   let create () : GuardedCh<'x> =
@@ -52,8 +52,8 @@ module GuardedCh =
     let picks = LinkedList<GuardedPick<'x>> ()
     let rec server () =
       let reqAlts =
-        (mkReqAlt giveCh gives <| fun r -> r.nack) <|>
-        (mkReqAlt pickCh picks <| fun r -> r.nack)
+        mkReqAlt giveCh gives (fun r -> r.nack) <|>
+        mkReqAlt pickCh picks (fun r -> r.nack)
       let ts = nodes picks
       let gs = nodes gives
       gs
@@ -64,23 +64,23 @@ module GuardedCh =
             let pick = pickNode.Value
             pick.guard give.value
             |> Option.map (fun pickAlt ->
-               () --> give.replyCh .&. pickAlt
-               |>- fun () ->
+               give.replyCh %<- () -&- pickAlt
+               ^-> fun () ->
                      gives.Remove giveNode
                      picks.Remove pickNode)))
       |> powerset
       |> List.map (function
           | [] -> reqAlts
-          | alt::alts -> List.fold (.&.) alt alts)
+          | alt::alts -> List.fold (-&-) alt alts)
       |> Alt.choose
       |>>= server
     server () |> Async.Start
     {giveCh = giveCh; pickCh = pickCh}
 
   let give guardedCh value =
-    guardedCh.giveCh <~-> fun replyCh nack ->
+    guardedCh.giveCh %<~-> fun replyCh nack ->
       {nack = nack; value = value; replyCh = replyCh}
 
   let pick guard guardedCh =
-    guardedCh.pickCh <~-> fun replyCh nack ->
+    guardedCh.pickCh %<~-> fun replyCh nack ->
       {nack = nack; guard = guard >> Option.map (Ch.give replyCh)}

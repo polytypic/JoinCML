@@ -21,7 +21,7 @@ module Dining =
     while true do
       printfn "%s is hungry.  Taking chopsticks..." name
       let! (lhsIdx, rhsIdx) =
-        MVar.take lhsStick <&> MVar.take rhsStick |> Alt.sync
+        MVar.take lhsStick +&+ MVar.take rhsStick |> Alt.sync
       printfn "%s got chopsticks %d and %d.  Eating..." name lhsIdx rhsIdx
       do! Async.Sleep (rnd.Next (0, 1000))
       printfn "%s is done eating.  Releasing chopsticks..." name

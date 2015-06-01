@@ -44,26 +44,24 @@ module Alt =
      | xA::xAs -> List.fold choice xA xAs
 
 module Convenience =
-  let (|>~) xA x2yA = Alt.afterAsync x2yA xA
-  let (|>-) xA x2y = xA |>~ (x2y >> async.Return)
-  let (|>=) xA y = xA |>- fun _ -> y
-  let (-->) x xCh = Ch.give xCh x
-  let (-~>) x xCh = x --> xCh |> Alt.sync |> Async.Start
-  let (<~->) requestCh mkReq = Alt.withNack <| fun nack ->
+  let (^~>) xA x2yA = Alt.afterAsync x2yA xA
+  let (^->) xA x2y = xA ^~> (x2y >> async.Return)
+  let (^=>) xA y = xA ^-> fun _ -> y
+  let (%<-) xCh x = Ch.give xCh x
+  let (%<~) xCh x = xCh %<- x |> Alt.sync |> Async.Start
+  let (%<~->) requestCh mkReq = Alt.withNack <| fun nack ->
     let replyCh = Ch.create ()
-    mkReq replyCh nack -~> requestCh
+    requestCh %<~ mkReq replyCh nack
     replyCh
-  let (<-~>) requestCh mkReq = Alt.before <| fun () ->
+  let (%<-~>) requestCh mkReq = Alt.before <| fun () ->
     let replyCh = Ch.create ()
-    mkReq replyCh --> requestCh
-    |>~ fun () ->
-          Alt.sync replyCh
+    requestCh %<- mkReq replyCh ^~> fun () -> Alt.sync replyCh
   let (<|>) xA1 xA2 = Alt.choice xA1 xA2
-  let (<&>) xA yA = Alt.join xA yA
-  let (.&>) xA yA = Alt.join xA yA |>- fun (_, y) -> y
-  let (<&.) xA yA = Alt.join xA yA |>- fun (x, _) -> x
-  let (.&.) xA yA = Alt.join xA yA |>- fun (_, _) -> ()
-  let (<*>) x2yA xA = Alt.join x2yA xA |>- fun (x2y, x) -> x2y x
+  let (+&+) xA yA = Alt.join xA yA
+  let (-&+) xA yA = xA +&+ yA ^-> fun (_, y) -> y
+  let (+&-) xA yA = xA +&+ yA ^-> fun (x, _) -> x
+  let (-&-) xA yA = xA +&+ yA ^-> fun (_, _) -> ()
+  let (<*>) x2yA xA = x2yA +&+ xA ^-> fun (x2y, x) -> x2y x
   let (>>=) xA x2yA = async.Bind (xA, x2yA)
   let result x = async.Return x
   let (|>>=) xA x2yA = xA |> Alt.sync >>= x2yA
