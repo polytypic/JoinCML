@@ -18,6 +18,7 @@ module Lottery =
     let rec forever () = op |>>= forever
     forever () |> Async.Start
     {winner = winner; loser = loser}
+
   let option l op =
-    l.winner -&+ op ^-> Some <|>
-    l.loser         ^=> None
+        l.loser ^=> None
+    <|> l.winner -&+ op ^-> Some

@@ -9,6 +9,7 @@ module Swap3WithLatch =
     {sw3 = Swap3.create ()
      lot = Lottery.create 3
      lat = Latch.create n}
-  let swap {sw3 = sw3; lot = lot; lat = lat} x =
-    Latch.is0 lat                                           ^=> None <|>
-    Swap3.swap sw3 x +&- Lottery.option lot (Latch.dec lat) ^-> Some
+
+  let swap s x =
+        Latch.is0 s.lat ^=> None
+    <|> Lottery.option s.lot (Latch.dec s.lat) -&+ Swap3.swap s.sw3 x ^-> Some
