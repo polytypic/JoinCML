@@ -26,5 +26,5 @@ module internal Util =
 module Alt =
   let requestWithNack requestCh mkReq = Alt.withNack <| fun nack ->
     let replyCh = Ch.create ()
-    mkReq nack replyCh +-> requestCh
-    ~~replyCh
+    mkReq nack replyCh -~> requestCh
+    replyCh

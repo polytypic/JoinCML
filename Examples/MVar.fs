@@ -28,7 +28,7 @@ type MVar<'x> = {fill: Ch<'x>; take: Ch<'x>}
 
 module MVar =
   let rec full x mv = x --> mv.take |>>= fun () -> empty mv
-  and empty mv = ~~mv.fill |>>= fun x -> full x mv
+  and empty mv = mv.fill |>>= fun x -> full x mv
 
   let start state =
     let mv = {fill = Ch.create (); take = Ch.create ()}
@@ -38,5 +38,5 @@ module MVar =
   let create () = start empty
   let createFull x = start (full x)
 
-  let take mv = ~~mv.take
+  let take mv = mv.take :> Alt<_>
   let fill mv x = x --> mv.fill

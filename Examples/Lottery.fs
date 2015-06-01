@@ -10,7 +10,7 @@ module Lottery =
     assert (0 < n)
     let lottery = Ch.create ()
     let winner = () --> lottery
-    let loser = ~~lottery
+    let loser = lottery
     let rec mk op = function
       | 0 -> op
       | n -> mk (op .&. winner) (n-1)

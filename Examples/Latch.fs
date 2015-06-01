@@ -2,7 +2,7 @@ namespace JoinCML.Examples
 
 open JoinCML
 
-type Latch = {dec: Ch<unit>; is0: Ch<unit>}
+type Latch = {dec: Alt<unit>; is0: Alt<unit>}
 
 [<CompilationRepresentation (CompilationRepresentationFlags.ModuleSuffix)>]
 module Latch =
@@ -14,5 +14,5 @@ module Latch =
       if 0 < n then () --> dec |>>= fun () -> nonzero (n-1) else zero ()
     Async.Start (nonzero n)
     {is0 = is0; dec = dec}
-  let dec c = ~~c.dec
-  let is0 c = ~~c.is0
+  let dec c = c.dec
+  let is0 c = c.is0

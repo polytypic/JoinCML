@@ -42,7 +42,7 @@ module GuardedCh =
       |> List.map (fun node ->
          nackOf node.Value |>- fun () -> reqs.Remove node)
       |> Alt.choose
-    let newReqAlt = ~~reqCh |>- (newLinkedListNode >> reqs.AddLast)
+    let newReqAlt = reqCh |>- (newLinkedListNode >> reqs.AddLast)
     nacksAlt <|> newReqAlt
 
   let create () : GuardedCh<'x> =

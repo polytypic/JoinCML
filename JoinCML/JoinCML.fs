@@ -1,7 +1,7 @@
 ﻿namespace JoinCML
 
-type Alt<'x> = | Alt
-type Ch<'x> = | Ch
+type [<AbstractClass>] Alt<'x> = class end
+type [<AbstractClass>] Ch<'x> = inherit Alt<'x>
 
 module Ch =
   let create () : Ch<'x> =
@@ -17,7 +17,7 @@ module Alt =
   let join (xA: Alt<'x>) (yA: Alt<'y>) : Alt<'x * 'y> =
     failwith "XXX"
 
-  let withNack (uA2xAA: Alt<unit> -> Alt<'x>) : Alt<'x> =
+  let withNack (uA2xAA: Alt<unit> -> #Alt<'x>) : Alt<'x> =
     failwith "XXX"
 
   let afterAsync (x2yA: 'x -> Async<'y>) (xA: Alt<'x>) : Alt<'y> =
@@ -28,7 +28,7 @@ module Alt =
 
   // Non-primitives:
 
-  let before (u2xA: unit -> Alt<'x>) : Alt<'x> =
+  let before (u2xA: unit -> #Alt<'x>) : Alt<'x> =
     withNack (ignore >> u2xA)
 
   let once (x: 'x) : Alt<'x> =
@@ -45,8 +45,7 @@ module Alt =
 
 module Convenience =
   let (-->) x xCh = Ch.give xCh x
-  let (~~) (xCh: Ch<'x>) = Ch.take xCh
-  let (+->) x xCh = x --> xCh |> Alt.sync |> Async.Start
+  let (-~>) x xCh = x --> xCh |> Alt.sync |> Async.Start
   let (|>~) xA x2yA = Alt.afterAsync x2yA xA
   let (|>-) xA x2y = xA |>~ (x2y >> async.Return)
   let (|>=) xA y = xA |>- fun _ -> y

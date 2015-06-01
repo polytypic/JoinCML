@@ -1,7 +1,7 @@
 ﻿namespace JoinCML
 
-type Alt<'x>
-type Ch<'x>
+type [<AbstractClass>] Alt<'x> = class end
+type [<AbstractClass>] Ch<'x> = inherit Alt<'x>
 
 module Ch =
   val create: unit -> Ch<'x>
@@ -12,7 +12,7 @@ module Alt =
   val choice: Alt<'x> -> Alt<'x> -> Alt<'x>
   val join: Alt<'x> -> Alt<'y> -> Alt<'x * 'y>
 
-  val withNack: (Alt<unit> -> Alt<'x>) -> Alt<'x>
+  val withNack: (Alt<unit> -> #Alt<'x>) -> Alt<'x>
 
   val afterAsync: ('x -> Async<'y>) -> Alt<'x> -> Alt<'y>
 
@@ -20,7 +20,7 @@ module Alt =
 
   // Non-primitives:
 
-  val before: (unit -> Alt<'x>) -> Alt<'x>
+  val before: (unit -> #Alt<'x>) -> Alt<'x>
 
   val once: 'x -> Alt<'x>
   val never<'x> : Alt<'x>
@@ -31,9 +31,7 @@ module Alt =
 module Convenience =
   val (-->): 'x -> Ch<'x> -> Alt<unit>
 
-  val (~~): Ch<'x> -> Alt<'x>
-
-  val (+->): 'x -> Ch<'x> -> unit
+  val (-~>): 'x -> Ch<'x> -> unit
 
   val (|>~): Alt<'x> -> ('x -> Async<'y>) -> Alt<'y>
   val (|>-): Alt<'x> -> ('x ->       'y ) -> Alt<'y>
