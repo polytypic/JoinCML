@@ -2,16 +2,16 @@ namespace JoinCML.Examples
 
 open JoinCML
 
-type Unique = {requestCh: Ch<Alt<unit> * Ch<int>>}
+type Unique = {queryCh: Ch<Alt<unit> * Ch<int>>}
 
 [<CompilationRepresentation (CompilationRepresentationFlags.ModuleSuffix)>]
 module Unique =
   let create () =
-    let requestCh = Ch.create ()
-    Server.serveAny 0 requestCh
+    let queryCh = Ch.create ()
+    Server.serveAny 0 queryCh
        <| fun (nack, _) -> nack
        <| fun (_, replyCh) i -> (replyCh %<- i, i + 1)
     |> Async.Start
-    {requestCh = requestCh}
+    {queryCh = queryCh}
 
-  let unique u = u.requestCh %<~-> fun replyCh nack -> (nack, replyCh)
+  let unique u = u.queryCh %<~-> fun replyCh nack -> (nack, replyCh)
