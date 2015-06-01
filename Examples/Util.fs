@@ -8,6 +8,10 @@ module List =
 
 [<AutoOpen>]
 module internal Util =
+  let stable x _ = x
+
+  let newLinkedListNode (x: 'x) = LinkedListNode<'x> (x)
+
   let nodes (lst: LinkedList<_>) =
     let rec lp ns = function
       | null -> ns

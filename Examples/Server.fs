@@ -12,22 +12,18 @@ module Server =
     let rec loop state =
       let newRequestAlt =
         requestAlt
-        |> Alt.after (fun request ->
-           requests.AddLast (LinkedListNode<_> (request))
-           state)
+        |> Alt.after (newLinkedListNode >> requests.AddLast)
       let nodes = nodes requests
       let nacksAlt =
         nodes
         |> List.map (fun node ->
            nackOf node.Value
-           |> Alt.after (fun () ->
-              requests.Remove node
-              state))
+           |> Alt.after (fun () -> requests.Remove node))
         |> Alt.choose
       powerset nodes
       |> List.map (function
           | [] ->
-            newRequestAlt <|> nacksAlt
+            newRequestAlt <|> nacksAlt |> Alt.after (stable state)
           | (node::nodes) as subset ->
             nodes
             |> List.foldFrom (replyTo node.Value state) (fun (replyAlt, state) node ->
@@ -38,5 +34,6 @@ module Server =
                  |> Alt.after (fun () ->
                     subset |> List.iter requests.Remove
                     state))
-      |> Alt.choose |>>= loop
+      |> Alt.choose
+      |>>= loop
     loop initial

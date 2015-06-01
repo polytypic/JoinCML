@@ -46,7 +46,7 @@ module GuardedCh =
       |> Alt.choose
     let newReqAlt =
       ~~reqCh
-      |> Alt.after (fun req -> reqs.AddLast (LinkedListNode<_> (req)))
+      |> Alt.after (newLinkedListNode >> reqs.AddLast)
     nacksAlt <|> newReqAlt
 
   let create () : GuardedCh<'x> =
