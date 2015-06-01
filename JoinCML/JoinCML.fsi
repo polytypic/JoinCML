@@ -81,7 +81,7 @@ module Convenience =
   val (^~>): Alt<'x> -> ('x -> Async<'y>) -> Alt<'y>
 
   /// Continue with function after commit.
-  val (^->): Alt<'x> -> ('x -> 'y ) -> Alt<'y>
+  val (^->): Alt<'x> -> ('x -> 'y) -> Alt<'y>
 
   /// Continue with value after commit.
   val (^=>): Alt<'x> -> 'y -> Alt<'y>
