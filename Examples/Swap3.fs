@@ -31,7 +31,7 @@ type Swap3<'x> = Swap3 of Ch<'x * Ch<'x * 'x>>
 module Swap3 =
   let create () = Swap3 (Ch.create ())
 
-  let swap (Swap3 sCh: Swap3<_>) x0 =
+  let swap (Swap3 sCh) x0 =
     let client =
       sCh <-~> fun cCh -> (x0, cCh)
     let leader =
