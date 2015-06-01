@@ -58,9 +58,9 @@ module Convenience =
     queryCh %<- queryFromReplyCh replyCh ^~> fun () -> Alt.sync replyCh
   let (<|>) xA1 xA2 = Alt.choice xA1 xA2
   let (+&+) xA yA = Alt.join xA yA
-  let (-&+) xA yA = xA +&+ yA ^-> fun (_, y) -> y
-  let (+&-) xA yA = xA +&+ yA ^-> fun (x, _) -> x
-  let (-&-) xA yA = xA +&+ yA ^-> fun (_, _) -> ()
+  let (-&+) xA yA = xA +&+ yA ^-> snd
+  let (+&-) xA yA = xA +&+ yA ^-> fst
+  let (-&-) xA yA = xA +&+ yA ^=> ()
   let (<*>) x2yA xA = x2yA +&+ xA ^-> fun (x2y, x) -> x2y x
   let (>>=) xA x2yA = async.Bind (xA, x2yA)
   let result x = async.Return x
