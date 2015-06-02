@@ -27,7 +27,7 @@ open JoinCML
 type MVar<'x> = {fill: Ch<'x>; take: Ch<'x>}
 
 module MVar =
-  let rec full x mv = mv.take %<- x |>>= fun () -> empty mv
+  let rec full x mv = mv.take *<- x |>>= fun () -> empty mv
   and empty mv = mv.fill |>>= fun x -> full x mv
 
   let start state =
@@ -39,4 +39,4 @@ module MVar =
   let createFull x = start (full x)
 
   let take mv = mv.take :> Alt<_>
-  let fill mv x = mv.fill %<- x
+  let fill mv x = mv.fill *<- x

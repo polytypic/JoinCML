@@ -54,20 +54,20 @@ module Convenience =
   // NOTE: Operators below are listed from highest to lowest precedence.
 
   /// Give message synchronously.
-  val (%<-): channel: Ch<'x> -> message: 'x -> Alt<unit>
+  val ( *<- ): channel: Ch<'x> -> message: 'x -> Alt<unit>
 
   /// Send message asynchronously.
-  val (%<~): channel: Ch<'x> -> message: 'x -> unit
+  val ( *<+ ): channel: Ch<'x> -> message: 'x -> unit
 
   /// Commit on query and await for reply.
-  val (%<-~>): queryCh: Ch<'q>
-            -> queryFromReplyCh: (Ch<'r> -> 'q)
-            -> Alt<'r>
+  val ( *<-+> ): queryCh: Ch<'q>
+              -> queryFromReplyCh: (Ch<'r> -> 'q)
+              -> Alt<'r>
 
   /// Send query and commit on reply.
-  val (%<~->): queryCh: Ch<'q>
-            -> queryFromReplyChAndNack: (Ch<'r> -> Alt<unit> -> 'q)
-            -> Alt<'r>
+  val ( *<+-> ): queryCh: Ch<'q>
+              -> queryFromReplyChAndNack: (Ch<'r> -> Alt<unit> -> 'q)
+              -> Alt<'r>
 
   /// Join and keep both.
   val (+&+): fst: Alt<'x> -> snd: Alt<'y> -> Alt<'x * 'y>
@@ -82,13 +82,16 @@ module Convenience =
   val (-&-): fst: Alt<'x> -> snd: Alt<'y> -> Alt<unit>
 
   /// Continue with async after commit.
-  val (^~>): after: Alt<'x> -> action: ('x -> Async<'y>) -> Alt<'y>
+  val (^=>): after: Alt<'x> -> action: ('x -> Async<'y>) -> Alt<'y>
+
+  /// Continue with async after commit.
+  val (^=>.): after: Alt<'x> -> action: Async<'y> -> Alt<'y>
 
   /// Continue with function after commit.
   val (^->): after: Alt<'x> -> action: ('x -> 'y) -> Alt<'y>
 
   /// Continue with value after commit.
-  val (^=>): after: Alt<'x> -> value: 'y -> Alt<'y>
+  val (^->.): after: Alt<'x> -> value: 'y -> Alt<'y>
 
   /// Exclusive choice.
   val (<|>): eitherThis: Alt<'x> -> orThat: Alt<'x> -> Alt<'x>

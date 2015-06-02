@@ -32,8 +32,8 @@ module Swap3 =
   let create () = Swap3 (Ch.create ())
 
   let swap (Swap3 sCh) x0 =
-        sCh %<-~> fun cCh -> (x0, cCh)
+        sCh *<-+> fun cCh -> (x0, cCh)
     <|> sCh +&+ sCh ^-> fun ((x1, cCh1), (x2, cCh2)) ->
-                          cCh1 %<~ (x2, x0)
-                          cCh2 %<~ (x0, x1)
+                          cCh1 *<+ (x2, x0)
+                          cCh2 *<+ (x0, x1)
                           (x1, x2)

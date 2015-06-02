@@ -44,26 +44,33 @@ module Alt =
      | xA::xAs -> List.fold choice xA xAs
 
 module Convenience =
-  let (^~>) xA x2yA = Alt.afterAsync x2yA xA
-  let (^->) xA x2y = xA ^~> (x2y >> async.Return)
-  let (^=>) xA y = xA ^-> fun _ -> y
-  let (%<-) xCh x = Ch.give xCh x
-  let (%<~) xCh x = xCh %<- x |> Alt.sync |> Async.Start
-  let (%<~->) queryCh queryFromReplyChAndNack = Alt.withNack <| fun nack ->
+  let (>>=) xA x2yA = async.Bind (xA, x2yA)
+  let result x = async.Return x
+
+  let (^=>)  xA x2yA = Alt.afterAsync x2yA xA
+  let (^=>.) xA   yA = xA ^=> fun _ -> yA
+  let (^->)  xA x2y  = xA ^=> (x2y >> async.Return)
+  let (^->.) xA   y  = xA ^-> fun _ -> y
+
+  let ( *<- ) xCh x = Ch.give xCh x
+  let ( *<+ ) xCh x = xCh *<- x |> Alt.sync |> Async.Start
+  let ( *<+-> ) queryCh queryFromReplyChAndNack = Alt.withNack <| fun nack ->
     let replyCh = Ch.create ()
-    queryCh %<~ queryFromReplyChAndNack replyCh nack
+    queryCh *<+ queryFromReplyChAndNack replyCh nack
     replyCh
-  let (%<-~>) queryCh queryFromReplyCh = Alt.before <| fun () ->
+  let ( *<-+> ) queryCh queryFromReplyCh = Alt.before <| fun () ->
     let replyCh = Ch.create ()
-    queryCh %<- queryFromReplyCh replyCh ^~> fun () -> Alt.sync replyCh
+    queryCh *<- queryFromReplyCh replyCh ^=>. Alt.sync replyCh
+
   let (<|>) xA1 xA2 = Alt.choice xA1 xA2
+
   let (+&+) xA yA = Alt.join xA yA
   let (-&+) xA yA = xA +&+ yA ^-> snd
   let (+&-) xA yA = xA +&+ yA ^-> fst
-  let (-&-) xA yA = xA +&+ yA ^=> ()
+  let (-&-) xA yA = xA +&+ yA ^->. ()
+
   let (<*>) x2yA xA = x2yA +&+ xA ^-> fun (x2y, x) -> x2y x
-  let (>>=) xA x2yA = async.Bind (xA, x2yA)
-  let result x = async.Return x
+
   let (|>>=) xA x2yA = xA |> Alt.sync >>= x2yA
 
   type AsyncBuilder with

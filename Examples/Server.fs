@@ -18,7 +18,7 @@ module Server =
       powerset nodes
       |> List.map (function
           | [] ->
-            (newQueryAlt <|> nacksAlt) ^=> state
+            (newQueryAlt <|> nacksAlt) ^->. state
           | (node::nodes) as subset ->
             nodes
             |> List.foldFrom (replyTo node.Value state) (fun (replyAlt, state) node ->

@@ -9,7 +9,7 @@ module Lottery =
   let create n =
     assert (0 < n)
     let lottery = Ch.create ()
-    let winner = lottery %<- ()
+    let winner = lottery *<- ()
     let loser = lottery
     let rec mk op = function
       | 0 -> op
@@ -20,5 +20,5 @@ module Lottery =
     {winner = winner; loser = loser}
 
   let option l op =
-        l.loser ^=> None
+        l.loser         ^->.None
     <|> l.winner -&+ op ^-> Some

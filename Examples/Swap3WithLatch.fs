@@ -11,5 +11,5 @@ module Swap3WithLatch =
      lat = Latch.create n}
 
   let swap s x =
-        Latch.is0 s.lat ^=> None
+        Latch.is0 s.lat ^->. None
     <|> Lottery.option s.lot (Latch.dec s.lat) -&+ Swap3.swap s.sw3 x ^-> Some
