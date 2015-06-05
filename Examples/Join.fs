@@ -35,7 +35,7 @@ module Join =
     static member (~-.) (AsyncCh c) = c ^-> fun _ y -> y
 
   /// Creates a new asynchronous channel.
-  let asyncCh () = AsyncCh <| Ch.create ()
+  let asyncCh () = AsyncCh <| Ch ()
 
   /// Sends a value to the asynchronous channel.
   let (<~) (AsyncCh c) x = c *<+ x
@@ -65,11 +65,11 @@ module Join =
     static member (~-.) (SyncCh c) = c ^-> fun (_, r) r2y -> r2y r
 
   /// Creates a call-reply channel.
-  let syncCh () : SyncCh<'x, 'y> = SyncCh <| Ch.create ()
+  let syncCh () : SyncCh<'x, 'y> = SyncCh <| Ch ()
 
   /// Call and wait for reply.
   let call (SyncCh x2y: SyncCh<'x, 'y>) (x: 'x) : Async<'y> = async {
-    let yCh = Ch.create ()
+    let yCh = Ch ()
     x2y *<+ (x, yCh)
     return! yCh
   }

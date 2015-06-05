@@ -1,11 +1,13 @@
 ﻿namespace JoinCML
 
-type [<AbstractClass>] Alt<'x> = class end
-type [<AbstractClass>] Ch<'x> = inherit Alt<'x>
+type [<AbstractClass>] Alt<'x> = class
+    internal new () = {}
+  end
+type Ch<'x> =
+  inherit Alt<'x>
+  new () = {}
 
 module Ch =
-  let create () : Ch<'x> =
-    failwith "XXX"
   let give (xCh: Ch<'x>) (x: 'x) : Alt<unit> =
     failwith "XXX"
   let take (xCh: Ch<'x>) : Alt<'x> =
@@ -28,19 +30,19 @@ module Alt =
 
   // Non-primitives:
 
-  let before (u2xA: unit -> #Alt<'x>) : Alt<'x> =
+  let prepare (u2xA: unit -> #Alt<'x>) : Alt<'x> =
     withNack (ignore >> u2xA)
 
   let once x =
-    let xCh = Ch.create ()
+    let xCh = Ch ()
     Ch.give xCh x |> sync |> Async.Start
     Ch.take xCh
 
-  let always x = before <| fun () -> once x
+  let always x = prepare <| fun () -> once x
 
-  let never<'x> : Alt<'x> = Ch.create () |> Ch.take
+  let never<'x> : Alt<'x> = Ch () |> Ch.take
 
-  let choose xAs = before <| fun () ->
+  let choose xAs = prepare <| fun () ->
     match Seq.toList xAs with
      | [] -> never
      | xA::xAs -> List.fold choice xA xAs
@@ -51,17 +53,17 @@ module Convenience =
 
   let (^=>)  xA x2yA = Alt.afterAsync x2yA xA
   let (^=>.) xA   yA = xA ^=> fun _ -> yA
-  let (^->)  xA x2y  = xA ^=> (x2y >> async.Return)
+  let (^->)  xA x2y  = xA ^=> (x2y >> result)
   let (^->.) xA   y  = xA ^-> fun _ -> y
 
   let ( *<- ) xCh x = Ch.give xCh x
   let ( *<+ ) xCh x = xCh *<- x |> Alt.sync |> Async.Start
   let ( *<+-> ) queryCh queryFromReplyChAndNack = Alt.withNack <| fun nack ->
-    let replyCh = Ch.create ()
+    let replyCh = Ch ()
     queryCh *<+ queryFromReplyChAndNack replyCh nack
     replyCh
-  let ( *<-+> ) queryCh queryFromReplyCh = Alt.before <| fun () ->
-    let replyCh = Ch.create ()
+  let ( *<-+> ) queryCh queryFromReplyCh = Alt.prepare <| fun () ->
+    let replyCh = Ch ()
     queryCh *<- queryFromReplyCh replyCh ^=>. Alt.sync replyCh
 
   let (<|>) xA1 xA2 = Alt.choice xA1 xA2

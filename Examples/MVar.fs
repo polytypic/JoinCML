@@ -31,7 +31,7 @@ module MVar =
   and empty mv = mv.fill |>>= fun x -> full x mv
 
   let start state =
-    let mv = {fill = Ch.create (); take = Ch.create ()}
+    let mv = {fill = Ch (); take = Ch ()}
     state mv |> Async.Start
     mv
 

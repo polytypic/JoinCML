@@ -4,13 +4,14 @@
 type [<AbstractClass>] Alt<'x> = class end
 
 /// Represents a synchronous many-to-many channel.
-type [<AbstractClass>] Ch<'x> = inherit Alt<'x>
+type Ch<'x> =
+  inherit Alt<'x>
+
+  /// Create a new channel.
+  new: unit -> Ch<'x>
 
 /// Operations on channels.
 module Ch =
-  /// Create a new channel.
-  val create: unit -> Ch<'x>
-
   /// Give message synchronously.
   val give: Ch<'x> -> 'x -> Alt<unit>
 
@@ -36,16 +37,16 @@ module Alt =
 
   // NOTE: Everything below this point is non-primitive.
 
-  /// Perform action before alternative construction.
-  val before: (unit -> #Alt<'x>) -> Alt<'x>
+  /// Create alternative just before synchronization.
+  val prepare: (unit -> #Alt<'x>) -> Alt<'x>
 
-  /// Alternative enabled once with given value.
+  /// Enabled once with given value.
   val once: 'x -> Alt<'x>
 
-  /// Alternative enabled always with given value.
+  /// Enabled always with given value.
   val always: 'x -> Alt<'x>
 
-  /// Never enabled alternative.
+  /// Never enabled.
   val never<'x> : Alt<'x>
 
   /// Exclusive choice.

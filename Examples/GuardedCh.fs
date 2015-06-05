@@ -46,8 +46,8 @@ module GuardedCh =
     nacksAlt <|> newReqAlt
 
   let create () : GuardedCh<'x> =
-    let giveCh = Ch.create ()
-    let pickCh = Ch.create ()
+    let giveCh = Ch ()
+    let pickCh = Ch ()
     let gives = LinkedList<GuardedGive<'x>> ()
     let picks = LinkedList<GuardedPick<'x>> ()
     let rec server () =

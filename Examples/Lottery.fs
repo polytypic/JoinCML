@@ -8,7 +8,7 @@ type Lottery = {winner: Alt<unit>; loser: Alt<unit>}
 module Lottery =
   let create n =
     assert (0 < n)
-    let lottery = Ch.create ()
+    let lottery = Ch ()
     let winner = lottery *<- ()
     let loser = lottery
     let rec mk op = function
