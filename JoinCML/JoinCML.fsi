@@ -42,6 +42,9 @@ module Alt =
   /// Alternative enabled once with given value.
   val once: 'x -> Alt<'x>
 
+  /// Alternative enabled always with given value.
+  val always: 'x -> Alt<'x>
+
   /// Never enabled alternative.
   val never<'x> : Alt<'x>
 

@@ -11,7 +11,7 @@ module Ch =
   let take (xCh: Ch<'x>) : Alt<'x> =
     failwith "XXX"
 
-module Alt =  
+module Alt =
   let choice (xA1: Alt<'x>) (xA2: Alt<'x>) : Alt<'x> =
     failwith "XXX"
   let join (xA: Alt<'x>) (yA: Alt<'y>) : Alt<'x * 'y> =
@@ -31,11 +31,13 @@ module Alt =
   let before (u2xA: unit -> #Alt<'x>) : Alt<'x> =
     withNack (ignore >> u2xA)
 
-  let once (x: 'x) : Alt<'x> =
+  let once x =
     let xCh = Ch.create ()
     Ch.give xCh x |> sync |> Async.Start
     Ch.take xCh
-    
+
+  let always x = before <| fun () -> once x
+
   let never<'x> : Alt<'x> = Ch.create () |> Ch.take
 
   let choose xAs = before <| fun () ->
