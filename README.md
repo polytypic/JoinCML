@@ -118,8 +118,8 @@ Some examples have been drafted:
 * Synchronous channel with guarded receive in
   [GuardedCh.fsi](Examples/GuardedCh.fsi) and
   [GuardedCh.fs](Examples/GuardedCh.fs).
-* An encoding of join-calculus and translations of examples based on
-  join-calculus in [Join.fs](Examples/Join.fs).
+* Translations of examples based on join-calculus in
+  [Join.fs](Examples/Join.fs).
 
 Contributions and collaborators are welcome!  In particular, if you have
 interesting concurrent programming problems to solve, it would be interesting to
