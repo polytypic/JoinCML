@@ -3,8 +3,5 @@ namespace JoinCML.Examples
 open JoinCML
 
 type Unique =
+  inherit AltDelegate<int>
   new: unit -> Unique
-
-[<CompilationRepresentation (CompilationRepresentationFlags.ModuleSuffix)>]
-module Unique =
-  val unique: Unique -> Alt<int>

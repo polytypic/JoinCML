@@ -3,11 +3,13 @@ namespace JoinCML.Examples
 open JoinCML
 
 type Latch =
+  inherit AltDelegate<unit>
   val dec: Ch<unit>
-  val is0: Ch<unit>
-  new n as l = {dec = Ch (); is0 = Ch ()} then
+  new n as l =
+    let is0 = Ch () in
+    {inherit AltDelegate<_> (is0); dec = Ch ()} then
     if n < 0 then failwithf "Latch %d" n
-    let rec zero () = l.is0 *<- () |>>= zero
+    let rec zero () = is0 *<- () |>>= zero
     and nonzero = function 0 -> zero ()
                          | n -> l.dec *<- () |>>= fun () -> nonzero <| n-1
     nonzero n |> Async.Start
@@ -15,4 +17,3 @@ type Latch =
 [<CompilationRepresentation (CompilationRepresentationFlags.ModuleSuffix)>]
 module Latch =
   let dec (l: Latch) = l.dec :> Alt<_>
-  let is0 (l: Latch) = l.is0 :> Alt<_>

@@ -7,7 +7,8 @@ type Lottery =
   val loser: Alt<unit>
   new (numTickets: int) as l =
     if numTickets <= 0 then failwithf "Lottery %d" numTickets
-    let lottery = Ch () in {winner = lottery *<- (); loser = lottery} then
+    let lottery = Ch ()
+    {winner = lottery *<- (); loser = lottery} then
     let rec mk op = function
       | 0 -> op
       | n -> mk <| op -&- l.winner <| n-1

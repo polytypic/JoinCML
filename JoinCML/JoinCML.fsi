@@ -3,6 +3,11 @@
 /// Represents a selective-joinable synchronous operation.
 type [<AbstractClass>] Alt<'x> = class end
 
+/// Allows non-primitive alternatives as implicit.
+type AltDelegate<'x> =
+  inherit Alt<'x>
+  new: Alt<'x> -> AltDelegate<'x>
+
 /// Represents a synchronous many-to-many channel.
 type Ch<'x> =
   /// Inherit from `Alt<'x>` so that taking from a channel is implicit.

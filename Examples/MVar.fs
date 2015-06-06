@@ -25,14 +25,15 @@ namespace JoinCML.Examples
 open JoinCML
 
 type MVar<'x> =
+  inherit AltDelegate<'x>
   val fill: Ch<'x>
-  val take: Ch<'x>
-  new () as mv = {fill = Ch (); take = Ch ()} then
-    let rec full x = mv.take *<- x |>>= empty
+  new () as mv =
+    let take = Ch ()
+    {inherit AltDelegate<_> (take); fill = Ch ()} then
+    let rec full x = take *<- x |>>= empty
     and empty () = mv.fill |>>= fun x -> full x
     empty () |> Async.Start
   new (x: 'x) as mv = MVar<'x> () then mv.fill *<+ x
 
 module MVar =
-  let take (mv: MVar<_>) = mv.take :> Alt<_>
   let fill (mv: MVar<_>) x = mv.fill *<- x

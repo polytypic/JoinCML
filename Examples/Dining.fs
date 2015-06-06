@@ -7,7 +7,7 @@ namespace JoinCML.Examples
 // using JoinCML.  The implementation is very simple: we simply join the two
 // alternatives corresponding to the actions of taking chopsticks:
 //
-//   MVar.take lhsStick +&+ MVar.take rhsStick
+//   lhsStick +&+ rhsStick
 //
 // The synchronization mechanism of JoinCML takes care of resolving ordering
 // problems to implement the simultaneous synchronization of joined
@@ -21,7 +21,7 @@ module Dining =
     let sleep () = rnd.Next (1, 4) |> Async.Sleep
     while true do
       printfn "%s is hungry.  Taking chopsticks..." name
-      let! (lhsIdx, rhsIdx) = MVar.take lhsStick +&+ MVar.take rhsStick
+      let! (lhsIdx, rhsIdx) = lhsStick +&+ rhsStick
 
       printfn "%s got chopsticks %d and %d.  Eating..." name lhsIdx rhsIdx
       do! sleep ()

@@ -10,5 +10,5 @@ type Swap3WithLatch<'x> =
 
 module Swap3WithLatch =
   let swap (s: Swap3WithLatch<_>) x =
-        Latch.is0 s.lat ^->. None
+        s.lat ^->. None
     <|> Lottery.option s.lot *<| Latch.dec s.lat -&+ Swap3.swap s.sw3 x ^-> Some

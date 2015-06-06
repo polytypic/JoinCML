@@ -3,6 +3,10 @@
 type [<AbstractClass>] Alt<'x> =
   new () = {}
 
+type AltDelegate<'x> =
+  inherit Alt<'x>
+  new (xA: Alt<'x>) = {}
+
 type Ch<'x> =
   inherit Alt<'x>
   new () = {}
