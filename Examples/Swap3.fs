@@ -29,7 +29,7 @@ open JoinCML
 type Swap3<'x> = Swap3 of Ch<'x * Ch<'x * 'x>>
 
 module Swap3 =
-  let create () = Swap3 (Ch ())
+  let create () = Ch () |> Swap3
 
   let swap (Swap3 sCh) x0 =
         sCh *<-+> fun cCh -> (x0, cCh)

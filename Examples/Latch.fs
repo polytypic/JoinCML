@@ -12,7 +12,7 @@ module Latch =
     let rec zero () = is0 *<- () |>>= zero
     and nonzero n =
       if 0 < n then dec *<- () |>>= fun () -> nonzero (n-1) else zero ()
-    Async.Start (nonzero n)
+    nonzero n |> Async.Start
     {is0 = is0; dec = dec}
 
   let dec c = c.dec
