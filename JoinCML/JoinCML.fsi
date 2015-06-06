@@ -16,9 +16,6 @@ module Ch =
   /// Give message synchronously.
   val give: Ch<'x> -> 'x -> Alt<unit>
 
-  /// Take message synchronously.
-  val take: Ch<'x> -> Alt<'x>
-
 /// Operations on alternatives.
 module Alt =
   /// Exclusive choice of alternatives.

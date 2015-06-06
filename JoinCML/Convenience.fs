@@ -37,6 +37,7 @@ module Convenience =
        | xA::xAs -> List.fold Alt.choice xA xAs
 
   module Ch =
+    let take (xCh: Ch<_>) = xCh :> Alt<_>
     let send xCh x = Ch.give xCh x |> Alt.start
 
   let ( *<- ) xCh x = Ch.give xCh x

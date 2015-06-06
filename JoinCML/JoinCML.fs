@@ -2,6 +2,7 @@
 
 type [<AbstractClass>] Alt<'x> =
   new () = {}
+
 type Ch<'x> =
   inherit Alt<'x>
   new () = {}
@@ -9,12 +10,11 @@ type Ch<'x> =
 module Ch =
   let give (xCh: Ch<'x>) (x: 'x) : Alt<unit> =
     failwith "XXX"
-  let take (xCh: Ch<'x>) : Alt<'x> =
-    failwith "XXX"
 
 module Alt =
   let choice (xA1: Alt<'x>) (xA2: Alt<'x>) : Alt<'x> =
     failwith "XXX"
+
   let join (xA: Alt<'x>) (yA: Alt<'y>) : Alt<'x * 'y> =
     failwith "XXX"
 

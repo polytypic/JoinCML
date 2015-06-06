@@ -72,6 +72,9 @@ module Convenience =
 
   /// Additional operations on channels.
   module Ch =
+    /// Take message synchronously.
+    val take: Ch<'x> -> Alt<'x>
+
     /// Send message asynchronously.
     val send: Ch<'x> -> 'x -> unit
 
