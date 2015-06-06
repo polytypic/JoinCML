@@ -45,7 +45,7 @@ module GuardedCh =
     let newReqAlt = queryCh ^-> (newLinkedListNode >> queries.AddLast)
     nacksAlt <|> newReqAlt
 
-  let create () : GuardedCh<'x> =
+  let create () =
     let giveCh = Ch ()
     let pickCh = Ch ()
     let gives = LinkedList<GuardedGive<'x>> ()
