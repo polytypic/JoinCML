@@ -12,22 +12,23 @@ module Server =
       let nodes = nodes queries
       let nacksAlt =
         nodes
-        |> List.map (fun node ->
-           nackOf node.Value ^-> fun () -> queries.Remove node)
+        |> List.map *<| fun node ->
+             nackOf node.Value ^-> fun () -> queries.Remove node
         |> Alt.choose
       powerset nodes
-      |> List.map (function
+      |> List.map *<| function
           | [] ->
             (newQueryAlt <|> nacksAlt) ^->. state
           | (node::nodes) as subset ->
             nodes
-            |> List.foldFrom (replyTo node.Value state) (fun (replyAlt, state) node ->
-               let (replyAlt', state) = replyTo node.Value state
-               (replyAlt -&- replyAlt', state))
+            |> List.foldFrom *<| replyTo node.Value state
+                *<| fun (replyAlt, state) node ->
+                      let (replyAlt', state) = replyTo node.Value state
+                      (replyAlt -&- replyAlt', state)
             |> fun (replyAlt, state) ->
                  replyAlt ^-> fun () ->
                                 subset |> List.iter queries.Remove
-                                state)
+                                state
       |> Alt.choose
       |>>= loop
     loop initial

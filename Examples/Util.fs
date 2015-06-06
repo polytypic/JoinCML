@@ -22,3 +22,5 @@ module internal Util =
     | x::xs ->
       let xss = powerset xs
       List.fold (fun xss xs -> (x::xs)::xss) xss xss
+
+  let ( *<| ) f x = f x

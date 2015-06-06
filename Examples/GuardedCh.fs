@@ -39,8 +39,8 @@ module GuardedCh =
                  (nackOf: 'q -> Alt<unit>) =
     let nacksAlt =
       nodes queries
-      |> List.map (fun node ->
-         nackOf node.Value ^-> fun () -> queries.Remove node)
+      |> List.map *<| fun node ->
+           nackOf node.Value ^-> fun () -> queries.Remove node
       |> Alt.choose
     let newReqAlt = queryCh ^-> (newLinkedListNode >> queries.AddLast)
     nacksAlt <|> newReqAlt
@@ -52,26 +52,25 @@ module GuardedCh =
     let picks = LinkedList<GuardedPick<'x>> ()
     let rec server () =
       let queryAlts =
-            mkQueryAlt giveCh gives (fun r -> r.nack)
-        <|> mkQueryAlt pickCh picks (fun r -> r.nack)
+            mkQueryAlt giveCh gives *<| fun r -> r.nack
+        <|> mkQueryAlt pickCh picks *<| fun r -> r.nack
       let pickNodes = nodes picks
       let giveNodes = nodes gives
       giveNodes
-      |> List.collect (fun giveNode ->
-         let give = giveNode.Value
-         pickNodes
-         |> List.choose (fun pickNode ->
-            let pick = pickNode.Value
-            pick.guard give.value
-            |> Option.map (fun pickAlt ->
-               give.replyCh *<- () -&- pickAlt
-               ^-> fun () ->
-                     gives.Remove giveNode
-                     picks.Remove pickNode)))
+      |> List.collect *<| fun giveNode ->
+           let give = giveNode.Value
+           pickNodes
+           |> List.choose *<| fun pickNode ->
+                let pick = pickNode.Value
+                pick.guard give.value
+                |> Option.map *<| fun pickAlt ->
+                    give.replyCh *<- () -&- pickAlt ^-> fun () ->
+                      gives.Remove giveNode
+                      picks.Remove pickNode
       |> powerset
-      |> List.map (function
+      |> List.map *<| function
           | [] -> queryAlts
-          | alt::alts -> List.fold (-&-) alt alts)
+          | alt::alts -> List.fold (-&-) alt alts
       |> Alt.choose
       |>>= server
     server () |> Async.Start
@@ -83,4 +82,4 @@ module GuardedCh =
 
   let pick guard guardedCh =
     guardedCh.pickCh *<+-> fun replyCh nack ->
-      {nack = nack; guard = guard >> Option.map (Ch.give replyCh)}
+      {nack = nack; guard = guard >> Option.map *<| Ch.give replyCh}
