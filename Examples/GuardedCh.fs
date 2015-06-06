@@ -71,11 +71,10 @@ type GuardedCh<'x> =
     server () |> Async.Start
 
 module GuardedCh =
-
   let give (guardedCh: GuardedCh<_>) value =
     guardedCh.giveCh *<+-> fun replyCh nack ->
       {value = value; replyCh = replyCh; nack = nack}
-
   let pick guard (guardedCh: GuardedCh<_>) =
     guardedCh.pickCh *<+-> fun replyCh nack ->
       {guard = guard >> Option.map *<| Ch.give replyCh; nack = nack}
+  let take guardedCh = pick Some guardedCh
