@@ -12,8 +12,7 @@ type Lottery =
       | 0 -> op
       | n -> mk <| op -&- l.winner <| n-1
     let op = mk l.loser <| numTickets-1
-    let rec forever () = op |>>= forever
-    forever () |> Async.Start
+    forever op |> Async.Start
 
 [<CompilationRepresentation (CompilationRepresentationFlags.ModuleSuffix)>]
 module Lottery =

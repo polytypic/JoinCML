@@ -11,7 +11,7 @@ module internal Util =
   let ( *<| ) f x = f x
   let ( *>> ) f g = f >> g
 
-  let inline newLinkedListNode (x: 'x) = LinkedListNode<'x> (x)
+  let newLinkedListNode (x: 'x) = LinkedListNode<'x> (x)
 
   let nodes (lst: LinkedList<_>) =
     let rec lp ns = function
@@ -26,3 +26,5 @@ module internal Util =
       let xss = powerset xs
       xss
       |> List.foldFrom xss *<| fun xss xs -> (x::xs)::xss
+
+  let rec forever op = op |>>= fun () -> forever op
