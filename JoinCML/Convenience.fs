@@ -67,9 +67,8 @@ module Convenience =
     member t.Bind (xA, x2yA) = xA |>>= x2yA
     member t.ReturnFrom xA = Alt.sync xA
 
-  let timeOutMillis ms = Alt.withNack <| fun nack ->
+  let timeOutMillis ms = Alt.prepare <| fun () ->
     let uCh = Ch ()
     let tokenSrc = new System.Threading.CancellationTokenSource ()
-    nack ^-> tokenSrc.Cancel |> Alt.start
     Async.Start (Async.Sleep ms >>- Ch.send uCh, tokenSrc.Token)
-    uCh
+    Alt.wrapAbort tokenSrc.Cancel uCh
