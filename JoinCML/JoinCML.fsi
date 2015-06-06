@@ -35,22 +35,7 @@ module Alt =
   /// Synchronize on alternative.
   val sync: Alt<'x> -> Async<'x>
 
-  // NOTE: Everything below this point is non-primitive.
-
-  /// Create alternative just before synchronization.
-  val prepare: (unit -> #Alt<'x>) -> Alt<'x>
-
-  /// Enabled once with given value.
-  val once: 'x -> Alt<'x>
-
-  /// Enabled always with given value.
-  val always: 'x -> Alt<'x>
-
-  /// Never enabled.
-  val never<'x> : Alt<'x>
-
-  /// Exclusive choice.
-  val choose: seq<Alt<'x>> -> Alt<'x>
+// NOTE: Everything below this point is non-primitive.
 
 /// Symbolic operators and top-level functions for concise expression.
 [<AutoOpen>]
@@ -120,3 +105,33 @@ module Convenience =
     /// Synchronize alternative and return result.
     member ReturnFrom: Alt<'x> -> Async<'x>
 
+  /// Additional operations on channels.
+  module Ch =
+    /// Send message asynchronously.
+    val send: Ch<'x> -> 'x -> unit
+
+  /// Additional operations on alternatives.
+  module Alt =
+    /// Start async thread to synchronize alternative.
+    val start: Alt<unit> -> unit
+
+    /// Create alternative with abort action.
+    val wrapAbort: action: (unit -> unit) -> Alt<'x> -> Alt<'x>
+
+    /// Create alternative just before synchronization.
+    val prepare: (unit -> #Alt<'x>) -> Alt<'x>
+
+    /// Enabled once with given value.
+    val once: 'x -> Alt<'x>
+
+    /// Enabled always with given value.
+    val always: 'x -> Alt<'x>
+
+    /// Never enabled.
+    val never<'x> : Alt<'x>
+
+    /// Exclusive choice.
+    val choose: seq<Alt<'x>> -> Alt<'x>
+
+  /// Create alternative that becomes available after given time.
+  val timeOutMillis: int -> Alt<unit>

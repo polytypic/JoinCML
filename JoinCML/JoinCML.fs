@@ -1,8 +1,7 @@
 ﻿namespace JoinCML
 
-type [<AbstractClass>] Alt<'x> = class
-    internal new () = {}
-  end
+type [<AbstractClass>] Alt<'x> =
+  new () = {}
 type Ch<'x> =
   inherit Alt<'x>
   new () = {}
@@ -28,36 +27,45 @@ module Alt =
   let sync (xA: Alt<'x>) : Async<'x> =
     failwith "XXX"
 
-  // Non-primitives:
-
-  let prepare (u2xA: unit -> #Alt<'x>) : Alt<'x> =
-    withNack (ignore >> u2xA)
-
-  let once x =
-    let xCh = Ch ()
-    Ch.give xCh x |> sync |> Async.Start
-    Ch.take xCh
-
-  let always x = prepare <| fun () -> once x
-
-  let never<'x> : Alt<'x> = Ch () |> Ch.take
-
-  let choose xAs = prepare <| fun () ->
-    match Seq.toList xAs with
-     | [] -> never
-     | xA::xAs -> List.fold choice xA xAs
-
 module Convenience =
-  let (>>=) xA x2yA = async.Bind (xA, x2yA)
   let result x = async.Return x
+  let (>>=) xA x2yA = async.Bind (xA, x2yA)
+  let (>>-) xA x2y = xA >>= (x2y >> result)
 
   let (^=>)  xA x2yA = Alt.afterAsync x2yA xA
   let (^=>.) xA   yA = xA ^=> fun _ -> yA
   let (^->)  xA x2y  = xA ^=> (x2y >> result)
   let (^->.) xA   y  = xA ^-> fun _ -> y
 
+  module Alt =
+    let start xA = xA |> Alt.sync |> Async.Start
+
+    let wrapAbort abort xAlt = Alt.withNack <| fun nack ->
+      nack ^-> abort |> start
+      xAlt
+
+    let prepare (u2xA: unit -> #Alt<'x>) : Alt<'x> =
+      Alt.withNack (ignore >> u2xA)
+
+    let once x =
+      let xCh = Ch ()
+      Ch.give xCh x |> start
+      xCh :> Alt<_>
+
+    let always x = prepare <| fun () -> once x
+
+    let never<'x> = Ch () :> Alt<'x>
+
+    let choose xAs = prepare <| fun () ->
+      match Seq.toList xAs with
+       | [] -> never
+       | xA::xAs -> List.fold Alt.choice xA xAs
+
+  module Ch =
+    let send xCh x = Ch.give xCh x |> Alt.start
+
   let ( *<- ) xCh x = Ch.give xCh x
-  let ( *<+ ) xCh x = xCh *<- x |> Alt.sync |> Async.Start
+  let ( *<+ ) xCh x = Ch.send xCh x
   let ( *<+-> ) queryCh queryFromReplyChAndNack = Alt.withNack <| fun nack ->
     let replyCh = Ch ()
     queryCh *<+ queryFromReplyChAndNack replyCh nack
@@ -80,3 +88,12 @@ module Convenience =
   type AsyncBuilder with
     member t.Bind (xA, x2yA) = xA |>>= x2yA
     member t.ReturnFrom xA = Alt.sync xA
+
+  open System.Threading
+
+  let timeOutMillis ms = Alt.withNack <| fun nack ->
+    let uCh = Ch ()
+    let tokenSrc = new CancellationTokenSource ()
+    nack ^-> tokenSrc.Cancel |> Alt.start
+    Async.Sleep ms >>- Ch.send uCh |> Async.Start
+    uCh :> Alt<_>
