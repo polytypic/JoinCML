@@ -70,4 +70,4 @@ module Convenience =
     let tokenSrc = new System.Threading.CancellationTokenSource ()
     nack ^-> tokenSrc.Cancel |> Alt.start
     Async.Sleep ms >>- Ch.send uCh |> Async.Start
-    uCh :> Alt<_>
+    uCh
