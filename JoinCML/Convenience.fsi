@@ -59,6 +59,9 @@ module Convenience =
   /// Async bind.
   val (>>=): Async<'x> -> ('x -> Async<'y>) -> Async<'y>
 
+  /// Async map.
+  val (>>-): Async<'x> -> ('x -> 'y) -> Async<'y>
+
   /// Async return.
   val result: 'x -> Async<'x>
 
