@@ -28,32 +28,27 @@ namespace JoinCML.Examples
 open System.Collections.Generic
 open JoinCML
 
-type GuardedGive<'x> = {nack: Alt<unit>; value: 'x; replyCh: Ch<unit>}
-type GuardedPick<'x> = {nack: Alt<unit>; guard: 'x -> option<Alt<unit>>}
+type GuardedGive<'x> = {value: 'x; replyCh: Ch<unit>; nack: Alt<unit>}
+type GuardedPick<'x> = {guard: 'x -> option<Alt<unit>>; nack: Alt<unit>}
 
-type GuardedCh<'x> = {giveCh: Ch<GuardedGive<'x>>; pickCh: Ch<GuardedPick<'x>>}
-
-module GuardedCh =
-  let mkQueryAlt (queryCh: Ch<'q>)
-                 (queries: LinkedList<'q>)
-                 (nackOf: 'q -> Alt<unit>) =
-    let nacksAlt =
-      nodes queries
-      |> List.map *<| fun node ->
-           nackOf node.Value ^-> fun () -> queries.Remove node
-      |> Alt.choose
-    let newReqAlt = queryCh ^-> (newLinkedListNode >> queries.AddLast)
-    nacksAlt <|> newReqAlt
-
-  let create () =
-    let giveCh = Ch ()
-    let pickCh = Ch ()
+type GuardedCh<'x> =
+  val giveCh: Ch<GuardedGive<'x>>
+  val pickCh: Ch<GuardedPick<'x>>
+  new () as gCh = {giveCh = Ch (); pickCh = Ch ()} then
+    let mkQueryAlt (queryCh: Ch<'q>)
+                   (queries: LinkedList<'q>)
+                   (nackOf: 'q -> Alt<unit>) =
+          nodes queries
+          |> List.map *<| fun node ->
+               nackOf node.Value ^-> fun () -> queries.Remove node
+          |> Alt.choose
+      <|> queryCh ^-> newLinkedListNode *>> queries.AddLast
     let gives = LinkedList<GuardedGive<'x>> ()
     let picks = LinkedList<GuardedPick<'x>> ()
     let rec server () =
       let queryAlts =
-            mkQueryAlt giveCh gives *<| fun r -> r.nack
-        <|> mkQueryAlt pickCh picks *<| fun r -> r.nack
+            mkQueryAlt gCh.giveCh gives *<| fun r -> r.nack
+        <|> mkQueryAlt gCh.pickCh picks *<| fun r -> r.nack
       let pickNodes = nodes picks
       let giveNodes = nodes gives
       giveNodes
@@ -74,12 +69,13 @@ module GuardedCh =
       |> Alt.choose
       |>>= server
     server () |> Async.Start
-    {giveCh = giveCh; pickCh = pickCh}
 
-  let give guardedCh value =
+module GuardedCh =
+
+  let give (guardedCh: GuardedCh<_>) value =
     guardedCh.giveCh *<+-> fun replyCh nack ->
-      {nack = nack; value = value; replyCh = replyCh}
+      {value = value; replyCh = replyCh; nack = nack}
 
-  let pick guard guardedCh =
+  let pick guard (guardedCh: GuardedCh<_>) =
     guardedCh.pickCh *<+-> fun replyCh nack ->
-      {nack = nack; guard = guard >> Option.map *<| Ch.give replyCh}
+      {guard = guard >> Option.map *<| Ch.give replyCh; nack = nack}

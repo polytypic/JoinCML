@@ -8,7 +8,7 @@ module Server =
     let queries = LinkedList<'query> ()
     let rec loop state =
       let newQueryAlt =
-        queryAlt ^-> (newLinkedListNode >> queries.AddLast)
+        queryAlt ^-> newLinkedListNode *>> queries.AddLast
       let nodes = nodes queries
       let nacksAlt =
         nodes
@@ -19,7 +19,7 @@ module Server =
       |> List.map *<| function
           | [] ->
             (newQueryAlt <|> nacksAlt) ^->. state
-          | (node::nodes) as subset ->
+          | node::nodes as subset ->
             nodes
             |> List.foldFrom *<| replyTo node.Value state
                 *<| fun (replyAlt, state) node ->
@@ -27,8 +27,8 @@ module Server =
                       (replyAlt -&- replyAlt', state)
             |> fun (replyAlt, state) ->
                  replyAlt ^-> fun () ->
-                                subset |> List.iter queries.Remove
-                                state
+                   subset |> List.iter queries.Remove
+                   state
       |> Alt.choose
       |>>= loop
     loop initial

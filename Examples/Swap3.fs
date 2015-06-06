@@ -26,14 +26,14 @@ namespace JoinCML.Examples
 
 open JoinCML
 
-type Swap3<'x> = Swap3 of Ch<'x * Ch<'x * 'x>>
+type Swap3<'x> =
+  val ch: Ch<'x * Ch<'x * 'x>>
+  new () = {ch = Ch ()}
 
 module Swap3 =
-  let create () = Ch () |> Swap3
-
-  let swap (Swap3 sCh) x0 =
-        sCh *<-+> fun cCh -> (x0, cCh)
-    <|> sCh +&+ sCh ^-> fun ((x1, cCh1), (x2, cCh2)) ->
-                          cCh1 *<+ (x2, x0)
-                          cCh2 *<+ (x0, x1)
-                          (x1, x2)
+  let swap (s3: Swap3<_>) x0 =
+        s3.ch *<-+> fun cCh -> (x0, cCh)
+    <|> s3.ch +&+ s3.ch ^-> fun ((x1, cCh1), (x2, cCh2)) ->
+          cCh1 *<+ (x2, x0)
+          cCh2 *<+ (x0, x1)
+          (x1, x2)

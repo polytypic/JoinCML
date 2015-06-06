@@ -2,14 +2,13 @@ namespace JoinCML.Examples
 
 open JoinCML
 
-type Swap3WithLatch<'x> = {sw3: Swap3<'x>; lot: Lottery; lat: Latch}
+type Swap3WithLatch<'x> =
+  val sw3: Swap3<'x>
+  val lot: Lottery
+  val lat: Latch
+  new n = {sw3 = Swap3 (); lot = Lottery 3; lat = Latch n}
 
 module Swap3WithLatch =
-  let create n =
-    {sw3 = Swap3.create ()
-     lot = Lottery.create 3
-     lat = Latch.create n}
-
-  let swap s x =
+  let swap (s: Swap3WithLatch<_>) x =
         Latch.is0 s.lat ^->. None
-    <|> Lottery.option s.lot (Latch.dec s.lat) -&+ Swap3.swap s.sw3 x ^-> Some
+    <|> Lottery.option s.lot *<| Latch.dec s.lat -&+ Swap3.swap s.sw3 x ^-> Some

@@ -2,18 +2,16 @@ namespace JoinCML.Examples
 
 open JoinCML
 
-type Latch = {dec: Alt<unit>; is0: Alt<unit>}
+type Latch =
+  val dec: Ch<unit>
+  val is0: Ch<unit>
+  new n as l = {dec = Ch (); is0 = Ch ()} then
+    let rec zero () = l.is0 *<- () |>>= zero
+    and nonzero n =
+      if 0 < n then l.dec *<- () |>>= fun () -> nonzero <| n-1 else zero ()
+    nonzero n |> Async.Start
 
 [<CompilationRepresentation (CompilationRepresentationFlags.ModuleSuffix)>]
 module Latch =
-  let create n =
-    let is0 = Ch ()
-    let dec = Ch ()
-    let rec zero () = is0 *<- () |>>= zero
-    and nonzero n =
-      if 0 < n then dec *<- () |>>= fun () -> nonzero (n-1) else zero ()
-    nonzero n |> Async.Start
-    {is0 = is0; dec = dec}
-
-  let dec c = c.dec
-  let is0 c = c.is0
+  let dec (l: Latch) = l.dec :> Alt<_>
+  let is0 (l: Latch) = l.is0 :> Alt<_>

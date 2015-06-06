@@ -2,23 +2,21 @@ namespace JoinCML.Examples
 
 open JoinCML
 
-type Lottery = {winner: Alt<unit>; loser: Alt<unit>}
+type Lottery =
+  val winner: Alt<unit>
+  val loser: Alt<unit>
+  new (numTickets: int) as l =
+    if numTickets <= 0 then failwithf "Lottery %d" numTickets
+    let lottery = Ch () in {winner = lottery *<- (); loser = lottery} then
+    let rec mk op = function
+      | 0 -> op
+      | n -> mk <| op -&- l.winner <| n-1
+    let op = mk l.loser <| numTickets-1
+    let rec forever () = op |>>= forever
+    forever () |> Async.Start
 
 [<CompilationRepresentation (CompilationRepresentationFlags.ModuleSuffix)>]
 module Lottery =
-  let create n =
-    assert (0 < n)
-    let lottery = Ch ()
-    let winner = lottery *<- ()
-    let loser = lottery
-    let rec mk op = function
-      | 0 -> op
-      | n -> mk (op -&- winner) (n-1)
-    let op = mk loser (n-1)
-    let rec forever () = op |>>= forever
-    forever () |> Async.Start
-    {winner = winner; loser = loser}
-
-  let option l op =
+  let option (l: Lottery) op =
         l.loser         ^->.None
     <|> l.winner -&+ op ^-> Some

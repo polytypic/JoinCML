@@ -18,25 +18,26 @@ open JoinCML
 
 module Dining =
   let rec runPhilosopher (rnd: Random) name lhsStick rhsStick = async {
+    let sleep () = rnd.Next (1, 4) |> Async.Sleep
     while true do
       printfn "%s is hungry.  Taking chopsticks..." name
       let! (lhsIdx, rhsIdx) = MVar.take lhsStick +&+ MVar.take rhsStick
 
       printfn "%s got chopsticks %d and %d.  Eating..." name lhsIdx rhsIdx
-      do! Async.Sleep (rnd.Next (0, 1000))
+      do! sleep ()
 
       printfn "%s is done eating.  Releasing chopsticks..." name
       do! MVar.fill lhsStick lhsIdx
       do! MVar.fill rhsStick rhsIdx
 
       printfn "%s is thinking..." name
-      do! Async.Sleep (rnd.Next (0, 1000))
+      do! sleep ()
   }
 
   let run names =
     let sticks = Array.init <| Array.length names <| fun x -> MVar x
     names
     |> Array.iteri *<| fun i name ->
-         runPhilosopher (Random ()) name
-           sticks.[i] sticks.[(i+1) % Array.length names]
+         runPhilosopher <| Random () <| name
+           <| sticks.[i] <| sticks.[(i+1) % Array.length names]
          |> Async.Start
