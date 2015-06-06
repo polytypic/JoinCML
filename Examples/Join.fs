@@ -43,6 +43,6 @@ module Join =
     let pies () =
       let f = GuardedCh ()
       let k = GuardedCh ()
-      def [(f *?= Apple <|> f *?= Rasperry) +&+ k *?= Pie ^-> printfn "%A pie"
+      def [(f *?= Apple <|> f *?= Rasperry) +&- k *?= Pie ^-> printfn "%A pie"
            (f *?= Rasperry <|> f *?= Cheese) +&- k *?= Cake ^-> printfn "%A cake"]
       {fill = GuardedCh.give f; kind = GuardedCh.give k}
