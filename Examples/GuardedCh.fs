@@ -59,9 +59,9 @@ type GuardedCh<'x> =
                 let pick = pickNode.Value
                 pick.guard give.value
                 |> Option.map *<| fun pickAlt ->
-                    give.replyCh *<- () -&- pickAlt ^-> fun () ->
-                      gives.Remove giveNode
-                      picks.Remove pickNode
+                     give.replyCh *<- () -&- pickAlt ^-> fun () ->
+                       gives.Remove giveNode
+                       picks.Remove pickNode
       |> powerset
       |> List.map *<| function
           | [] -> queryAlts
