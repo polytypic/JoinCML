@@ -32,9 +32,15 @@ type GuardedGive<'x> = {value: 'x; replyCh: Ch<unit>; nack: Alt<unit>}
 type GuardedPick<'x> = {guard: 'x -> option<Alt<unit>>; nack: Alt<unit>}
 
 type GuardedCh<'x> =
+  inherit AltDelegate<'x>
   val giveCh: Ch<GuardedGive<'x>>
   val pickCh: Ch<GuardedPick<'x>>
-  new () as gCh = {giveCh = Ch (); pickCh = Ch ()} then
+  new () as gCh =
+    let pickCh = Ch ()
+    {inherit AltDelegate<_> (pickCh *<+-> fun replyCh nack ->
+                               {guard = Ch.give replyCh >> Some; nack = nack})
+     giveCh = Ch ()
+     pickCh = pickCh} then
     let mkQueryAlt (queryCh: Ch<'q>)
                    (queries: LinkedList<'q>)
                    (nackOf: 'q -> Alt<unit>) =
@@ -77,4 +83,3 @@ module GuardedCh =
   let pick guard (guardedCh: GuardedCh<_>) =
     guardedCh.pickCh *<+-> fun replyCh nack ->
       {guard = guard >> Option.map *<| Ch.give replyCh; nack = nack}
-  let take guardedCh = pick Some guardedCh
