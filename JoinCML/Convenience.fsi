@@ -95,6 +95,9 @@ module Convenience =
     /// Enabled always with given value.
     val always: 'x -> Alt<'x>
 
+    /// Enabled always with unit value.
+    val unit: Alt<unit>
+
     /// Never enabled.
     val never<'x> : Alt<'x>
 

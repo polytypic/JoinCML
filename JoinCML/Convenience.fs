@@ -29,6 +29,8 @@ module Convenience =
 
     let always x = prepare <| fun () -> once x
 
+    let unit = always ()
+
     let never<'x> = Ch () :> Alt<'x>
 
     let choose xAs = prepare <| fun () ->
