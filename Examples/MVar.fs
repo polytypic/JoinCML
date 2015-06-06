@@ -24,19 +24,15 @@ namespace JoinCML.Examples
 
 open JoinCML
 
-type MVar<'x> = {fill: Ch<'x>; take: Ch<'x>}
+type MVar<'x> =
+  val fill: Ch<'x>
+  val take: Ch<'x>
+  new () as mv = {fill = Ch (); take = Ch ()} then
+    let rec full x = mv.take *<- x |>>= empty
+    and empty () = mv.fill |>>= fun x -> full x
+    empty () |> Async.Start
+  new (x: 'x) as mv = MVar<'x> () then mv.fill *<+ x
 
 module MVar =
-  let rec full x mv = mv.take *<- x |>>= fun () -> empty mv
-  and empty mv = mv.fill |>>= fun x -> full x mv
-
-  let start state =
-    let mv = {fill = Ch (); take = Ch ()}
-    state mv |> Async.Start
-    mv
-
-  let create () = start empty
-  let createFull x = start (full x)
-
-  let take mv = mv.take :> Alt<_>
-  let fill mv x = mv.fill *<- x
+  let take (mv: MVar<_>) = mv.take :> Alt<_>
+  let fill (mv: MVar<_>) x = mv.fill *<- x

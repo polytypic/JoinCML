@@ -34,7 +34,7 @@ module Dining =
   }
 
   let run names =
-    let sticks = Array.init (Array.length names) MVar.createFull
+    let sticks = Array.init <| Array.length names <| fun x -> MVar x
     names
     |> Array.iteri *<| fun i name ->
          runPhilosopher (Random ()) name
