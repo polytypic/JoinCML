@@ -11,15 +11,15 @@ type IVar<'x> =
                               | Choice1Of2 x -> x
                               | Choice2Of2 e -> raise e)
      fill = Ch ()} then
-    let rec full x =
-          xI.fill ^=> fun _ ->
-            // XXX log error
-            full x
-      <|> read ^=> fun replyCh ->
-            replyCh *<-+ x
-            full x
-       |> Alt.sync
-    xI.fill ^=> full |> Alt.start
+    let serve x =
+      read ^-> fun replyCh ->
+        replyCh *<-+ x
+    let drain =
+      xI.fill ^->. () // XXX log spurious fill error
+    xI.fill ^-> fun x ->
+        serve x |> forever |> Async.Start
+        drain |> forever |> Async.Start
+    |> Alt.start
 
 module IVar =
   let fill (xI: IVar<_>) x = xI.fill *<-+ Choice1Of2 x
