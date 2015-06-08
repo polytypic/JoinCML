@@ -43,10 +43,10 @@ module Convenience =
     let send xCh x = Ch.give xCh x |> Alt.start
 
   let ( *<- ) xCh x = Ch.give xCh x
-  let ( *<+ ) xCh x = Ch.send xCh x
+  let ( *<-+ ) xCh x = Ch.send xCh x
   let ( *<+-> ) queryCh queryFromReplyChAndNack = Alt.withNack <| fun nack ->
     let replyCh = Ch ()
-    queryCh *<+ queryFromReplyChAndNack replyCh nack
+    queryCh *<-+ queryFromReplyChAndNack replyCh nack
     replyCh
   let ( *<-+> ) queryCh queryFromReplyCh = Alt.prepare <| fun () ->
     let replyCh = Ch ()

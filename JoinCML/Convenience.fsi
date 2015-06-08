@@ -11,7 +11,7 @@ module Convenience =
   val ( *<- ): channel: Ch<'x> -> message: 'x -> Alt<unit>
 
   /// Send message asynchronously.
-  val ( *<+ ): channel: Ch<'x> -> message: 'x -> unit
+  val ( *<-+ ): channel: Ch<'x> -> message: 'x -> unit
 
   /// Commit on query and await for reply.
   val ( *<-+> ): queryCh: Ch<'q>

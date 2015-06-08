@@ -31,9 +31,9 @@ module Join =
       let get = Ch ()
       let none = Ch ()
       let some = Ch ()
-      none *<+ ()
-      def [none -&+ put ^-> fun x -> some *<+ x
-           some +&+ get ^-> fun (x, replyCh) -> none *<+ (); replyCh *<+ x]
+      none *<-+ ()
+      def [none -&+ put ^-> fun x -> some *<-+ x
+           some +&+ get ^-> fun (x, replyCh) -> none *<-+ (); replyCh *<-+ x]
       {get = get *<-+> id; put = Ch.give put}
 
   module Pies =

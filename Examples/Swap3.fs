@@ -34,6 +34,6 @@ module Swap3 =
   let swap (s3: Swap3<_>) x0 =
         s3.ch *<-+> fun cCh -> (x0, cCh)
     <|> s3.ch +&+ s3.ch ^-> fun ((x1, cCh1), (x2, cCh2)) ->
-          cCh1 *<+ (x2, x0)
-          cCh2 *<+ (x0, x1)
+          cCh1 *<-+ (x2, x0)
+          cCh2 *<-+ (x0, x1)
           (x1, x2)

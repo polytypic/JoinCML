@@ -33,7 +33,7 @@ type MVar<'x> =
     let rec full x = take *<- x |>>= empty
     and empty () = mv.fill |>>= fun x -> full x
     empty () |> Async.Start
-  new (x: 'x) as mv = MVar<'x> () then mv.fill *<+ x
+  new (x: 'x) as mv = MVar<'x> () then mv.fill *<-+ x
 
 module MVar =
   let fill (mv: MVar<_>) x = mv.fill *<- x
