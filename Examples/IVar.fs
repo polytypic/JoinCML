@@ -4,7 +4,7 @@ namespace JoinCML.Examples
 //
 // Compared to CML, JoinCML seems to often require more complex implementations
 // of concurrent abstractions in order to support the join operation.  In this
-// respect JoinCML is similar to the TE as described in
+// respect JoinCML is similar to TE as described in
 //
 //   Programming Idioms for Transactional Events
 //   http://arxiv.org/pdf/1002.0936.pdf
