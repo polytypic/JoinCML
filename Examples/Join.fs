@@ -19,6 +19,10 @@ open JoinCML.Examples
 
 module Join =
   let def cs = Alt.choose cs |> forever |> Async.Start
+  let Non = function None -> Some () | Some _ -> None
+  let Som = function None -> None    | Some x -> Some x // aka `id`
+  let ( *<<-+ ) gCh x = GuardedCh.give gCh x |> Alt.start
+  let ( *? ) gCh m = gCh |> GuardedCh.pick m
   let ( *?= ) gCh c =
     gCh
     |> GuardedCh.pick *<| fun x ->
@@ -29,11 +33,10 @@ module Join =
     let create () =
       let put = Ch ()
       let get = Ch ()
-      let none = Ch ()
-      let some = Ch ()
-      none *<-+ ()
-      def [none -&+ put ^-> fun x -> some *<-+ x
-           some +&+ get ^-> fun (x, replyCh) -> none *<-+ (); replyCh *<-+ x]
+      let buf = GuardedCh ()
+      buf *<<-+ None
+      def [buf *? Non -&+ put ^-> fun x          -> buf *<<-+ Some x
+           buf *? Som +&+ get ^-> fun (x, repCh) -> buf *<<-+ None; repCh *<-+ x]
       {get = get *<-+> id; put = Ch.give put}
 
   module Pies =
