@@ -15,9 +15,10 @@ namespace JoinCML.Examples
 // works in CML.
 //
 // In order to make multiple reads possible, we implement read operations in RPC
-// -style.  Read operations are replied to by the IVar server using asynchronous
-// message passing.
+// -style.  Reads are replied to by the IVar server asynchronously. Furthermore,
+// it is necessary to manage read requests before the IVar is filled.
 
+open System.Collections.Generic
 open JoinCML
 
 type IVar<'x> =
@@ -25,19 +26,35 @@ type IVar<'x> =
   val fill: Ch<Choice<'x, exn>>
   new () as xI =
     let read = Ch ()
-    {inherit AltDelegate<_> (read *<-+> id ^-> function
-                              | Choice1Of2 x -> x
-                              | Choice2Of2 e -> raise e)
+    {inherit AltDelegate<_> (read *<+-> fun rCh n -> (rCh, n)
+                             ^-> function Choice1Of2 x -> x
+                                        | Choice2Of2 e -> raise e)
      fill = Ch ()} then
-    let serve x =
-      read ^-> fun replyCh ->
-        replyCh *<-+ x
-    let drain =
+    let serveFull r =
+      read ^-> fun (replyCh, _) ->
+        replyCh *<-+ r
+    let drainFull =
       xI.fill ^->. () // XXX log spurious fill error
-    xI.fill ^-> fun x ->
-        serve x |> forever |> Async.Start
-        drain |> forever |> Async.Start
-    |> Alt.start
+
+    let reads = LinkedList<Ch<Choice<'x, exn>>> ()
+    let nackCh = Ch ()
+
+    let rec serveEmpty () =
+          xI.fill ^-> fun r ->
+            serveFull r |> forever |> Async.Start
+            drainFull |> forever |> Async.Start
+            reads |> Seq.iter (fun replyCh -> replyCh *<-+ r)
+      <|> read ^=> fun (replyCh, nack) ->
+            let node = newLinkedListNode replyCh
+            Alt.start <| nack ^-> fun () -> nackCh *<-+ node
+            reads.AddLast node
+            serveEmpty ()
+      <|> nackCh ^=> fun node ->
+            reads.Remove node
+            serveEmpty ()
+       |> Alt.sync
+
+    serveEmpty () |> Async.Start
 
 module IVar =
   let fill (xI: IVar<_>) x = xI.fill *<-+ Choice1Of2 x
